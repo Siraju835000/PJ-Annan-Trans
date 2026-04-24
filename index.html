@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PJ Annan — Translation Delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #8a6f30;
+    --dark: #0E0E0E;
+    --dark-2: #161616;
+    --dark-3: #1E1E1E;
+    --dark-4: #252525;
+    --dark-5: #2E2E2E;
+    --text: #F0EDE6;
+    --text-muted: #9A9589;
+    --green: #4CAF7D;
+    --red: #E05C5C;
+    --border: rgba(201,168,76,0.18);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 90% 90%, rgba(201,168,76,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+    position: relative;
+    z-index: 1;
+  }
+  .header {
+    padding: 48px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .header-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  .header-title span { color: var(--gold); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+  .header-right { text-align: right; flex-shrink: 0; }
+  .header-right .label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .header-right .value {
+    font-size: 13px;
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .summary-card {
+    background: var(--dark-3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+  .summary-card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .summary-card.red::before { background: linear-gradient(90deg, var(--red), transparent); }
+  .summary-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .summary-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .summary-card.green .summary-value { color: var(--green); }
+  .summary-card.red .summary-value { color: var(--red); }
+  .table-wrap {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr {
+    background: var(--dark-4);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 16px 20px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .sr-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold-dim);
+    font-weight: 600;
+    width: 50px;
+  }
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+    letter-spacing: 0.3px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-video {
+    background: rgba(201,168,76,0.12);
+    color: var(--gold-light);
+    border: 1px solid rgba(201,168,76,0.25);
+  }
+  .btn-video:hover { background: rgba(201,168,76,0.22); }
+  .btn-tamil {
+    background: rgba(100,149,237,0.12);
+    color: #8ab4f8;
+    border: 1px solid rgba(100,149,237,0.25);
+  }
+  .btn-tamil:hover { background: rgba(100,149,237,0.22); }
+  .btn-english {
+    background: rgba(180,120,255,0.12);
+    color: #c8a8ff;
+    border: 1px solid rgba(180,120,255,0.25);
+  }
+  .btn-english:hover { background: rgba(180,120,255,0.22); }
+  .duration-text { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .title-text { font-size: 13px; color: var(--text); font-weight: 500; max-width: 280px; line-height: 1.4; }
+  .amount-text { font-size: 14px; font-weight: 600; color: var(--text); }
+  .badge-done {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(76,175,125,0.15);
+    color: var(--green);
+    border: 1px solid rgba(76,175,125,0.3);
+  }
+  .badge-pending {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(224,92,92,0.15);
+    color: var(--red);
+    border: 1px solid rgba(224,92,92,0.3);
+  }
+  .total-row td {
+    background: var(--dark-4);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 14px 20px;
+  }
+  .expanded-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .expanded-panel {
+    background: var(--dark-3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .expanded-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .expanded-header-left .type-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .expanded-header-left .video-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .btn-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--dark-5);
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-close:hover { background: rgba(224,92,92,0.2); color: var(--red); border-color: var(--red); }
+  .expanded-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    line-height: 1.8;
+    font-size: 14px;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .expanded-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--dark-4);
+  }
+  .expanded-footer .info { font-size: 12px; color: var(--text-muted); }
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 6px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-download:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+  .footer-brand {
+    color: var(--gold-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  @media (max-width: 700px) {
+    .summary-row { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .header-right { text-align: left; }
+    th, td { padding: 12px 10px; }
+    .btn-link { font-size: 11px; padding: 5px 10px; }
+  }
+</style>
+</head>
+<body>
+<style>
+  /* ── ADMIN PANEL STYLES ── */
+  .admin-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--dark-4);
+    border-top: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 200;
+    flex-wrap: wrap;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .admin-bar.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .admin-bar-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .admin-bar-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+  }
+  .btn-add { background: rgba(76,175,125,0.18); color: var(--green); border: 1px solid rgba(76,175,125,0.35); }
+  .btn-add:hover { background: rgba(76,175,125,0.3); }
+  .btn-export { background: rgba(201,168,76,0.18); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.35); }
+  .btn-export:hover { background: rgba(201,168,76,0.3); }
+  .btn-action-edit { background: rgba(100,149,237,0.15); color: #8ab4f8; border: 1px solid rgba(100,149,237,0.3); }
+  .btn-action-edit:hover { background: rgba(100,149,237,0.28); }
+  .btn-action-delete { background: rgba(224,92,92,0.15); color: var(--red); border: 1px solid rgba(224,92,92,0.3); }
+  .btn-action-delete:hover { background: rgba(224,92,92,0.28); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-box {
+    background: var(--dark-3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .form-input, .form-textarea, .form-select {
+    background: var(--dark-4);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--gold); }
+  .form-textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    background: var(--dark-4);
+    border-radius: 0 0 12px 12px;
+  }
+  .btn-save {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 9px 24px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-save:hover { background: var(--gold-light); }
+  .btn-cancel {
+    background: var(--dark-5);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { color: var(--text); }
+  .confirm-box {
+    background: var(--dark-3);
+    border: 1px solid rgba(224,92,92,0.4);
+    border-radius: 10px;
+    padding: 32px;
+    max-width: 420px;
+    text-align: center;
+    animation: slideUp 0.2s ease;
+  }
+  .confirm-title { font-size: 16px; font-weight: 600; color: var(--red); margin-bottom: 10px; }
+  .confirm-msg { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+  .confirm-btns { display: flex; gap: 12px; justify-content: center; }
+  .btn-confirm-delete {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 9px 24px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  /* Row action buttons in table */
+  .row-actions { display: flex; gap: 6px; }
+  /* Admin actions column hidden by default */
+  .col-actions { display: none; }
+  .admin-unlocked .col-actions { display: table-cell; }
+  /* Bottom padding so admin bar doesn't cover content */
+  body { padding-bottom: 70px; }
+
+  /* ── PASSWORD MODAL ── */
+  .pw-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  .pw-box {
+    background: var(--dark-3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 32px 28px;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    animation: slideUp 0.25s ease;
+    position: relative;
+  }
+  .pw-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .pw-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .pw-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+  }
+  .pw-input {
+    width: 100%;
+    background: var(--dark-4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    transition: border-color 0.2s;
+    margin-bottom: 8px;
+  }
+  .pw-input:focus { border-color: var(--gold); }
+  .pw-error {
+    font-size: 12px;
+    color: var(--red);
+    min-height: 18px;
+    margin-bottom: 16px;
+  }
+  .pw-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 11px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+  }
+  .pw-btn:hover { background: var(--gold-light); }
+  .pw-close {
+    position: absolute;
+    top: 14px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .pw-close:hover { color: var(--text); }
+  .pw-lock-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+<script>
+/* ================================================================
+   DATA SECTION — EDIT HERE ONLY
+   ================================================================
+   To add a new video: copy one entry block below and fill in.
+   To edit: find the entry by sr number and change the value.
+   To delete: remove the entire { } block for that entry.
+
+   payment: "done" = green Done badge
+   payment: "pending" = red Pending badge
+
+   videoLink: paste the full YouTube URL here
+   amount: number only, no ₹ symbol (example: 3000)
+   duration: format as "MM:SS" (example: "12:34")
+================================================================ */
+
+const DELIVERIES = [
+
+  {
+    sr: 1,
+    title: "பாத்திமா ரலியல்லாஹு அன்ஹா எந்த ஆண்டு பிறந்தார்கள்",
+    videoLink: "https://youtu.be/jXhzbdPUeZg?si=qHOR7BLGcJqqikrp",
+    duration: "12:34",
+    date: "20/04/2026",
+    amount: 3000,
+    payment: "done",
+    tamil: `இப்ப விட்ட இடத்தில இருந்து வருவோம் அலி ரலியல்லாஹுஅன்ஹு அவர்கள் மக்காவில இருந்து நபி ஸல்லாஹு அலைஹி வஸல்லம் ஹிஜரத்து செய்து சென்ற பிறகே அவர்களும் ஹிஜரத்து செய்து வந்து விடுகிறார்கள்.ஹிஜரத்து செய்து வந்து பத்ர்போர்ல கலந்து கொள்ளும்போது அவர்களுடைய வயது 20 என்பதை ஆதாரத்தோடு நம்ம சென்ற தொடரில் சொல்லி இருந்தோம்.அப்படின்னா ஒரு 19 வயதில் அவர்கள் ஹிஜரத்து செய்து வந்திருப்பாங்க 20 வயதில் பத்ர்போர்ல கலந்து கொண்டாங்கன்னா 19 வயதில் ஹிஜரத்து செய்து மதீனாவுக்கு வந்து விட்டார்கள்.
+
+வந்த பிறகு அவர்களைப் பற்றி வரலாறில் அறிந்து கொள்ள வேண்டிய ஒரு விஷயம் அவர்கள் நபி ஸல்லல்லாஹு அலைஹி வஸல்லம் உடைய செல்ல மகள் பாத்திமா ரலியல்லாவஹு அன்ஹா அவர்களை திருமணம் செய்கிறார்கள். நபி ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் திருமணம் செய்து கொடுக்கிறார்கள். இது எப்ப கொடுக்கிறார்கள் என்று கேட்டால் மதீனாவுக்கு வந்த பிறகு அந்த பாத்திமா ரலியல்லாஹு அன்ஹு உடைய வரலாறைப் பொருத்த வரைக்கும் நமக்கு சில ஆச்சரியமான விஷயங்கள் அதில் அடங்கி இருக்கிறது.
+
+ஆச்சரியமான விஷயம் என்ன என்று கேட்டால் அவர்கள் நபிஸல்லல்லாஹி அலைஹி வஸல்லம் அவர்களுடைய செல்ல மகள் பாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் நபிஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்களுடைய அன்புக்குப் பாத்திரமான மகளா இருக்காங்க அப்படி இருந்தால் அவர்களுடைய வரலாறுகள் தெளிவாக மக்களுக்கு சென்று அடைந்திருக்கும்.
+
+ஆனா அவங்க எப்ப பிறந்தாங்க அது குறித்து விவரங்கள் இல்லை. அவங்க எப்ப இறந்தாங்க, இறக்கும்போது அவங்க வயசு என்ன, இந்த விவரங்களெல்லாம் authentic ஆன செய்தியாக பதியப்படவே இல்லை. அப்போ இது ஒரு ஆச்சரியம் தானே, ஒருவர் முக்கியமான ஒரு ஆளாக ஆன பிறகு, அவங்க சம்மந்தப்பட்டதெல்லாம் துல்லியமாக, சரியாக அனைவரும் அறிந்து வைத்து பதிவு செய்வார்கள்.அப்போ நபி ஸல்லல்லாஹி அலைஹி வஸல்லம் காலத்துல சகாபாக்களில் ஒரு சகாபியைப் போல அவங்க கருதப்பட்டுருக்காங்களே தவிர, இப்போ build up கொடுத்து சொல்றாங்க இல்ல, அப்படியான ஒரு நிலையில் வைத்திருந்தார்களேயானால் அவங்க வரலாறுகளெல்லாம் தெளிவாக சொல்லப்பட்டிருக்கும் பாத்திமா ரலியல்லாஹு அன்ஹா எப்ப பிறந்தாங்க என்று பார்த்தீங்கன்னா ஒரு செய்தியில் வருகிறது ஏன்னா பிறந்தது தெரிந்தால்தான் கல்யாணம் செய்யும் போது என்ன வயது என்கிற விவரங்களுக்காக அறிய வேண்டி இருப்பதற்காக. இது ஹாக்கிமில் வரக்கூடிய ஒரு செய்தி இதுல என்ன வருகிறது என்று கேட்டால் நபி ஸல்லல்லாஹி அலைஹி வஸல்லம் அவர்கள் நபியாகி ஒரு வருடத்தில் அதாவது 41 வது வயதில் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள் அப்படின்னு சொல்லி அப்தில்லா இப்ன் முஹம்மத் இப்ன் சுலைமான் இப்ன் ஜாஃபர் ஹாஷிமி என்பவர் அவருடைய தாத்தா சொன்னதாக அறிவித்திருக்கிறார் இப்படி ஒரு செய்தி ஹாக்கிம்ல இருக்கிறது. ரஸுலல்லாவுடைய 41 வயதில் அவங்க பிறந்தாங்க என்பதற்கு இந்த செய்தியை அறிவிக்கக் கூடிய மூன்று நபர் முதலாவது ஆள் யார் என்று கேட்டால் அப்தில்லா இப்ன் முஹம்மத் இப்ன் சுலைமான் இப்ன் ஜாஃபர் அறிவித்திருக்கிறார் இவருக்கு பெரிய வரலாற்றுக் குறிப்பு நம்பகத்தன்மை எதுவும் கிடைக்கவில்லை அவர் தன்னுடைய தந்தை வழியாக அறிவிக்கிறார் தந்தையாரும் முஹம்மத் இப்ன் சுலைமான் இப்ன் ஜாஃபர் வழியாக அறிவிக்கிறார் அவரும் யார் என்பதற்கு ஹதீஸ் கலை நூல்களில் Detail கிடைக்கவில்லை அதே மாதிரி அவர் யாரிடமிருந்து அறிவிக்கிறார் என்றால் சுலைமான் இப்ன் ஜாஃபரிடமிருந்து அறிவிக்கிறார் அவருடைய தாத்தா அவரும் மஜ்ஹுல் யார் என்று தெரியாதாவர் அப்ப யார் என்று தெரியாத ஒர் ஆள் இன்னொரு ஆளுக்கு சொல்லி அவரும் யார் என்று தெரியாமல் இருக்க அவர் இன்னொரு ஆளுக்கு சொல்லி அவரும் யார் என்று தெரியாமல் இருக்க ஒரு ஆள் மூலமாகத்தான் இந்த செய்தி ஹாக்கிமில் பதிவாயிருக்குறது அப்போது ரஸுலல்லாவுடைய 41 ஆவது வயதில் ஃபாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார் என்று சொல்வதற்கு இதையும் நாம் ஆதாரமாக கொள்ள முடியாது ஏன் என்று கேட்டால் யார் என்று தெரியாத ஆள் மூலமாகத்தான் இந்த செய்தி வந்து இருக்கிறது இன்னும் சில பேர் என்ன செய்திருக்கிறார்கள் என்றால் ரஸுலல்லாவுடைய 36 ஆவது வயதில் ஃபாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார். பாத்திமா ரலியல்லாஹு அன்ஹா மதீனாவுக்கு வந்து திருமணம் செய்யும் போது எத்தனை வயது என்பதை இதைக் கொண்டு தான் அளவிட முடியும் அப்படி இருக்கும்போது 41ல் பிறந்தார் என்று சொன்னால் மதீனாவுக்கு வரும்போது பனிரெண்டு வயதுடையவராக இருப்பார். ரஸுலல்லாவின் 41 ஆவது வயதில் ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் பிறந்திருந்தால் நபி அவர்கள் தன்னுடைய 53 ஆவது ஹிஜ்ரத் பண்ணி வருறாங்க அப்படி இருக்கும்போது ஃபாத்திமா அவர்கள் 12 வயதுடையவர்களாக தான் இருந்திருப்பாங்க மதீனாவுக்கு வரும்போது 12 வயதுடையவர்களாகதான் அவங்க இருந்திருப்பாங்க அந்தக் கணக்கு படி வைத்து கொண்டால் இந்த செய்தியில் எப்படிச் சொல்கிறார்கள் என்று கேட்டால் இதைச் சொல்பவர் அப்துல்லா இப்ன் முஅம்மல் என்பவர் சொல்வதாக வருகிறது உள்ளிதத்து பாத்திமா ரலியல்லாஹு அன்ஹா கப்லன் நுபுவத்தி க அர்பைசனின் நபிகள் நாயகம் ஸல்லல்லாஹி அலைஹி வஸல்லம் நபியாக ஆவதற்கு 4 வருடங்களுக்கு முன் ஃபாத்திமா பிறந்தார்கள் ரஸுலல்லா நபியாக ஆவதற்கு 4 வருடங்களுக்கு முன் பிறந்தார்கள். 4 வருடங்களுக்கு முன் என்றால் ரஸுலல்லாவுக்கு 36 வயது அப்படியென்றால் நபிகள் நாயகம் ஸல்லல்லாஹி அலைஹி வஸல்லம் 36 வயது இருக்கும்போது பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தாங்க அப்படியென்றால் ரஸுலல்லாவுடைய 36 ஆவது வயதில் பிறந்தாங்க அப்படியென்றால் மதினாவுக்கு வரும்போது அவங்களுடைய வயசு 17 இருக்கும் ஏனென்றால் ரஸுலல்லாஹ் 53 ஆவது வயதில் தான் ஹிஜ்ரத் போறாங்க அப்படியென்றால் மதினாவுக்கு வரும்போது பாத்திமா ரலியல்லாஹு அன்ஹா வயது 12 என்று எடுத்துக்கொள்வதா அல்லது 17 என்று எடுத்துக்கொள்வதா என்றால் இரண்டுக்கும் செய்தி இருக்குறது ஆனா இந்த செய்தியாவது சரியாக இருக்கா என்று கேட்டால் சரியாக இல்லை எவ்வளவு முக்கியத்துவம் வாய்ந்த ஒரு person ஆக அவங்க இருக்காங்க அவங்க எப்போ இஸ்லாத்துக்கு வந்தாங்க எப்போ மரணித்தாங்க என்பது உள்பட முரண்பாடான செய்திகள் தான் கிடைக்கிறது சரி இல்லாத செய்திகளாகவும் கிடைக்கிறது இந்த செய்தியை அறிவிக்கிற அப்துல்லா இப்ன் மு அம்மல் என்கிறவர் யார் என்று கேட்டால் பலவீனமான ஒர் ஆள் என்று ஏகமானதா முடிவு செய்யப்பட்டவர் இவர் தான் இதை சொல்றாரு அவங்க அப்பா வழியாக அறிவிக்கிறார் அவங்க அப்பா ஒரு சஹாபி இவர் யார் என்று கேட்டால் இவர் பலவீனமான ஒர் நபர் என்று ஏகமானதாக எல்லாருமே இவர் கொஞ்சம் முன் பின் முரணாக சொல்லுவார் என்கிறார்கள் அப்படி சொல்லக்கூடிய ஒரு நபர். இவரிடமிருந்து அறிவிப்பவர் அப்துல் அஜீஸ் இப்ன் இம்ரான் இவர் அடுத்த அறிவிப்பாளர் ஆக வருகிறார் இவர் பொய்யர் என்று சந்தேகிக்கப்பட்டவர் பலவீனமான ஆள் மட்டும் கிடையாது இவர் பொய் சொல்லுவார் என்று சந்தேகப்படுவது என்றால் அவருடைய பல செய்திகள் authentic ஆன செய்திக்கு மாற்றமாக இருக்கும்.
+
+அவர் பொய்யராக இருப்பார் என்று சந்தேகிக்கப்பட்டவராக இருந்தார் என்று சொல்லி கருதப்பட்டவர்தான் இவர். இப்படியான ஒரு வழியாகத்தான் அறிவிக்கப்படுகிறது.அவரிடம் அறிவிக்கும் ஒரு ஆளை இபராஹிம் என்றவர் அறிவிக்கிறார். அவர் பரவாயில்லை. அவரிடம் அறிவிக்கும் ஒரு ஆளை அப்துல்லா இப்ன் ஷபீப் என்றவர் அறிவிக்கிறார். இவரும் மத்ருக்குள் ஹதீஸ். இவருடைய ஹதீஸை விட்டுவிடவேண்டும். அதாவது சந்தேகத்துக்குறியவர், பொய் சொல்வார் என்ற சந்தேகத்திற்குரியவர் இப்படியான ஆள்கள் வழியாகத்தான் இந்தச் செய்தி தாரிக் இஸ்பஹான் என்ற நூலில் அறிவிப்பாளர் வரிசையுடன் இருக்கிறது. அப்படியென்றால் ரஸுலல்லாவின் 36 வயதில் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள் என்பதற்கு ஆதாரம் இல்லை. ரஸுலல்லாவின் 41 வயதில் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள் என்ற அறிவிப்பு இருக்கிறது ஆனால் ஆதாரம் இல்லை. ரஸுலல்லாவின் 36 வயதில் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள் என்று அறிவிப்பு இருக்கிறது ஆனால் அறிவிப்பு சரியாக இல்லை அதே மாதிரி அந்த தாரிக் தபரில் என்ன சொல்லப்படுகிறது என்று கேட்டால் காபத்துல்லா மறு நிர்மானம் செய்கிறார்கள் அல்லவா? எப்போது மக்காவில் இருக்குக்ககூடிய மக்களெல்லாம் கூடி இந்த காபாவை மீண்டும் புதிப்பிக்க வேண்டும் என்று ஒரு கட்டுமானப் பணியை செய்கிறார்கள். இது எப்போது நடக்கிறது என்று கேட்டால் ரஸுலல்லாவின் 35 ஆவது வயதில் நடக்கிறது. ரஸுலல்லாவுக்கு 35 வயது ஆகும்போது தான் காபத்துல்லா சிதிலம் அடைந்திருக்கிறது. நாம் எல்லாரும் சேர்ந்து இதை கட்டுவோம் அப்படின்னு சொல்லி அந்த கட்டுமானப் பணியை அந்த முஷ்ரிக்குகள் ரஸுலல்லாவின் 35 ஆவது வயதில் அதாவது இஸ்லாம் வராத ஒரு காலம்.‌ அந்தக் காலத்தில் கட்டும்போது அதில் ரஸுலல்லாவும் பங்கு எடுத்திருக்கிறார்கள் என்று எல்லாம் படித்திருக்கிறோம் அல்லவா? இது 35 ஆவது வயதில் நடக்கிறது. அந்த ஆண்டுதான் உழிதத்துப் பாத்திமா பின்த் ரஸுலல்லாஹி ஸல்லல்லாஹி அலைஹி வஸல்லம் ரஸுலல்லாவின் 35 ஆவது வயதில் காபா கட்டும்போது தான் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள். ரஸுலல்லாவின் 35 வயதில் பாத்திமா பிறந்தார்கள். ரஸுலல்லாவின் 36 வயதில் பாத்திமா பிறந்தார்கள். ரஸுலல்லாவின் 41 வயதில் பாத்திமா பிறந்தார்கள். இந்த 35 வயதில் பாத்திமா பிறந்தார்கள் என்ற அறிவிப்பு சரியாக இருக்கிறதா என்று கேட்டால் இதை இப்னு அபி சப்ரா என்பவர் அறிவிக்கிறார் மற்ற ஆட்களெல்லாம் எல்லாம் சரியாக இருக்கிறார்கள் இவர் இப்படி ஆள் என்று கேட்டால் முத்தகைமுன் பில்வலை இட்டுக் கட்டுவார் என்று சந்தேகிக்கப்பட்ட ஒரு ஆள் இவர் பலவீனமான ஆள் இல்ல நினைச்சதெல்லாம் இஸஷ்டத்துக்கு சொல்வார் இட்டுக் கட்டி அல்லா மேல சொல்ல முடியாது ரஸுல் மேல இட்டுக் கட்டி சொல்வார் இட்டுக் கட்டுவார் என்று சந்தேக்கப்பட்ட ஒரு ஆள் வழியாகத்தான் இதுவும் அறிவிக்கப்படுகிறது பாத்திமா ரளியல் லாஹு அன்ஹா ரஸுலல்லாவுடைய 41 வயதில் பிறந்தார்கள் என்று சொன்னால் ஹிஜிரத்து செய்து வரும்போது 13 வயது உடைவர்களாக இருந்திருப்பார்கள். 36ல் அவர்கள் பிறந்திருப்பார்கள் என்று வைத்துக் கொண்டால் ஹஜ்ரத்து செய்து மதீனாவுக்கு வரும்போது 17 வயது உடையவர்களாக இருப்பார்கள் ரஸுலல்லாவுடைய 35 வயதில் பிறந்தார்கள் என்று வைத்துக்கொண்டால் 18 வயது உடைவர்களாக ஹிஜ்ரத்து செய்து மதீனாவுக்கு வரும்போது 18 வயது உடையவர்களாக இருப்பார்கள் அப்போ பாத்திமா ரலியல்லாஹு அன்ஹா பற்றி மூன்று வரலாறுதான் கிடைக்கிறது மூன்றுமே சரி இல்லாமல் இருக்கிறது மூன்றுமே இட்டுக்கட்டுபவர்கள் பொய்யர்கள் பலவீனர்கள் authentic இல்லாத ஆள்கள் வழியாகத்தான் சொல்லப்படுகிறது அப்போ நம்ம என்ன செய்யனும் இந்த வயது பற்றிய விவரம் நம்மிடம் இல்லை இல்லை என்றால் என்ன செய்ய வேண்டுமா இதை வைத்துக்கொண்டு முடிவு எடுக்க முடியாது ஒரே ஒரு செய்தி இருந்தால் கூட இது ஒன்றுதான் கிடைக்கிறது மாற்றமாக இல்லை வரலாறு தானே என்ற காரணத்தால் எடுத்துக்கொள்ளலாம் ஆனால் முரண்பட்டதாக இருக்கிறது இதை ஏற்றால் அதை ஏன் நீங்கள் ஏற்கவில்லை என்று கேட்பார்கள் அதை ஏற்றால் இதை ஏன் நீங்கள் மறுத்தீர்கள் என்று கேட்பார்கள் முரண்பாடாக இருக்குறதுனால நமக்கு பாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் வயது தெரியாது யாருக்கும் தெரியாது authentic ஆன செய்திகளைக் கொண்டு அதுக்கு வரலாறு இல்லை நமக்கு ஒரு விஷயத்தை விளங்கிக்குற அளவுக்கு சில விஷயங்கள் கிடைக்குறது என்ன கிடைக்கிறது நபி ஸல்லல்லாஹி அலைஹி வஸல்லம் ஆரம்ப கால கட்டத்தில் அதாவது இஸ்லாமிய துவக்க காலப் பிரச்சாரத்தில் என்ன செய்வாங்க என்று கேட்டால்
+
+காபாவில் போய் அவர்கள் தொழுவாங்க. காபாவில் போய் தொழும்போது என்ன செய்வாங்க என்று கேட்டால், இதை உண்ணிப்பாக கவனித்துக்கொண்டு இருந்து ரஸுலல்லாவை வேதனை படுத்துவதற்காக என்ன செய்வார்கள் என்று கேட்டால், எல்லாரும் கூடியிருந்து கொண்டு யாராவது போய் ஒரு ஒட்டகத்தை அறுத்து, அந்த ஒட்டகத்தின் குடலை, சானியோட கொண்டு வந்து, இவர் தலையில் வைக்க யார் தயாராக இருக்கிறீர்கள் அப்படின்னு கேட்பாங்க. இந்த செய்தி புகாரி 520 ஆவது ஹதீஸில் இருக்குறது. அதே மாதிரி ஒருத்தன் போய் ஒரு ஒட்டகத்தின் குடலை கொண்டு வருவான். நபி ஸல்லல்லாஹி அலைஹி வஸல்லம் அவர்கள் சஜ்தா செய்யும்போது ஃபலம்மா ஸஜத ரஸுலல்லாஹி ஸல்லல்லாஹி அலைஹி வஸல்லம் வளஃஅஹு பைன கதிஃபதைஹி அவர் ஸஜ்தா செய்யும்போது இரண்டு தோளுக்கு மத்தியில் அந்த குடலை கொண்டு போய் வெச்சிருவான். வைத்த உடனே, வஸபத அந்நபிய்யு ஸல்லல்லாஹு அலைஹி வஸல்லம ஸாஜிதன் ரஸுலல்லாஹி ஸல்லல்லாஹி அலைஹி வஸல்லம் ஸஜ்தாவிலேயே இருக்குறாங்க. ஃபளஹிகூ அவங்க சிரிக்குறாங்க. ஹத்தா மால பஃளுஹும் இலா பஃளின் மினள் ளஹிகி சிரிக்கும் போது ஒருவர் மீது ஒருவர் சாய்ந்து கொண்டு மேலும் ஒருவர் மீது ஒருவர் விழுந்து சிரிக்கிறார்கள். இது அவர்களுக்கு மிகவும் கொண்டாட்டமாக இருக்கிறது. இப்படி நடந்ததை இப்ன் மஸ்வூத் அறிவிக்கிறாங்க. இவ்வாறு நடந்துக்கொண்டு இருப்பதை ஃபன்தலக முன்தலிகுன ஒருவர் சென்று பாத்திமாவிடம் சொல்கிறார் அதாவது இந்த சம்பவம் நடக்கும்போது பாத்திமாவுடைய வயது என்னவாக இருக்கும் என்று விளங்குவதற்காக இதைச் சொல்கிறேன் இது authentic ஆன செய்தி.
+
+இது புகாரியில் 520 ஆவது ஹதீஸ். அந்த ஒட்டகத்தின் குடலை வைத்த உடனே பாத்திமாவிடம் போய் சொல்றாங்க என்று சொன்னால் ஃபாத்திமா ஐந்து வயது பிள்ளையாக இருந்தால் போய் சொல்ல முடியாது இல்லையா ஒரு எட்டு வயது பத்து வயது பிள்ளையாக இருந்தாலும் சொல்ல முடியாது கொஞ்சம் பருவ வயது அடைந்தவராகவோ அல்லது அதற்கு நெருக்கமானவராகவோ இருந்தால் தான் அவங்களுக்கு போய் information கொடுப்பார்கள், ஃபாத்திமாவிடம் போய் சொல்கிறார்கள், வஹிய ஜுவைரிய்யதுன் அவர் சிறு வயது பெண்ணாக இருந்தார் சிறு வயது என்பது பருவ வயது அடைவதற்கு முன்னாடி உள்ள ஒரு பருவம் குழந்தை பருவம் கிடையாது ஆனால் பருவம் அடைவதற்கு கொஞ்சம் முன்னாடி உள்ள ஒரு பருவம் அவங்கள் வந்து இளம் பெண்ணாக இருந்தார்கள் ரஸுலல்லா ஸஜ்தாவில் உள்ள நிலையில் ஃபாத்திமா அவர்கள் ஓடி வந்து அந்த ஒட்டகக் குடலை அப்புறப்படுத்தி விட்டு திட்டுகிறார்கள் இப்படிப்பட்ட வேலையை செய்தவர்களை ஏசவும் செய்கிறார்கள் இதெல்லாம் ஃபாத்திமா ரலியல்லாஹு அன்ஹா செய்கிறார்கள் என்றால் அப்போது அவர் ஒரு matured person ஆக இருந்திருக்கிறார்கள். இது துவக்க காலத்தில் நடந்தது. அதற்கு பிறகு ரஸுலல்லாஹி ஸல்லல்லாஹி அலைஹி வஸல்லம் அவர்கள் மறைவாக அர்கம் ரலியல்லாஹு அன்ஹு அவர்கள் வீட்டில் தொழ ஆரம்பித்து விட்டார்கள். மேலும் ரஸுலல்லாஹி ஸல்லல்லாஹி அலைஹி வஸல்லம் அவர்கள் மறைவாக பிரச்சாரம் செய்ய ஆரம்பித்து விட்டார்கள். அந்த நிகழ்வு துவக்க காலத்தில் நடைபெற்றதாகும் அப்படி இருக்கும் பட்சத்தில் ஃபாத்திமா அவர்கள் கொஞ்சம் விவரங்கள் அறியும் பருவத்தில் உள்ளவர்களாக இருந்திருக்காங்க இந்த சம்பவம் அநேகமாக ரஸுலல்லாவின் 45 வயதில நடந்திருக்கும் அப்படி இருக்கும்போது ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் ரஸுலல்லாவின் 41 ஆவது வயதில் பிறந்திருக்க வாய்ப்பு இல்லை. அப்படி ரஸுலல்லாவின் 41 ஆவது வயதில் பாத்திமா ரலியல்லாஹு அன்ஹா பிறந்திருந்தால் ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் நான்கு வயது பிள்ளையாகத்தான் இருந்திருப்பாங்க இதை வைத்து பார்க்கும் போது ரஸுலல்லாவின் 41 ஆவது வயதில் ஃபாத்திமா ரலியல்லாஹு அன்ஹா பிறந்தார்கள் என்ற அறிவிப்பு பலவீனம் என்று நாம் ஏற்கனவே கூறி விட்டோம். எனவே நடந்த நிகழ்வுகளை அடிப்படையாகக் கொண்டு பார்த்தால் நடக்கும் சம்பவங்களை அறியும் பருவத்தில் ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் இருந்தார் என்பதும் எனவேதான் ஒருவர் ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்களிடம் சென்று இவ்வாறு நடக்கிறது என்னால் தடுக்க முடியவில்லை என்று யாரோ ஒருவர் கூறியதாக இப்ன் மஸ்வூத் ரலியல்லாஹு அன்ஹு அவர்கள் அறிவிக்கிறார். அந்த யாரோ ஒருவர் இப்ன் மஸ்வூத் ரலியல்லாஹு அன்ஹு அவர்களாகத்தான் இருந்திருப்பார் என்று சில விரிவுரையாளர்கள் சொல்கிறார்கள். எனவே ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் ரஸுலல்லாவின் 41 ஆவது வயதில் பிறந்தார் என்று சொல்லவே முடியாது. ஃபாத்திமா ரலியல்லாஹு அன்ஹா அவர்கள் ரஸுலல்லாவின் 33,35,36 ஆவது வயதில் தான் பிறந்திருப்பார் என்பதே சாத்தியமானதாகும்.`,
+    english: `Let's pick up from where we left off.
+
+Ali Radiyallahu Anhu migrated only after the Prophet Sallallahu Alaihi Wasallam had migrated from Makkah. He also migrated and arrived there. When he migrated and participated in the Battle of Badr, his age was 20, which we mentioned with evidence in our previous episode. That means he would have migrated at the age of 19. If he participated in the Battle of Badr at 20, he had already migrated and reached Madinah at 19.
+
+After his arrival, one thing we need to know from his history is, he marries the beloved daughter of the Prophet Sallallahu Alaihi Wasallam, Fatima Radiyallahu Anha. The Prophet Sallallahu Alaihi Wasallam gives her in marriage to him. If asked when this happened, it was after coming to Madinah. As far as the history of Fatima Radiyallahu Anha is concerned, it contains some surprising facts for us.
+
+If you ask what those surprising facts are — She is the beloved daughter of the Prophet Sallallahu Alaihi Wasallam. Fatima Radiyallahu Anha was the most dearly loved daughter of the Prophet Sallallahu Alaihi Wasallam. If that is the case, her history should have clearly reached the people.
+
+But there are no details regarding when she was born. When she died, what her age was when she passed away — these details were never recorded as authentic reports. This is surprising, isn't it? After becoming such an important figure, everything related to her should have been accurately and correctly known and recorded by everyone. So, during the time of the Prophet Sallallahu Alaihi Wasallam, she was considered just like any other companion among the Sahabah. If she had been held in the highly exaggerated status that people claim today, her history would have been clearly documented.
+
+If we look at when Fatima Radiyallahu Anha was born, it appears in one report. We need to know when she was born to calculate her age at the time of her marriage. This is a report found in Al-Hakim. What it says is that she was born one year after the Prophet Sallallahu Alaihi Wasallam attained Prophethood, that is, when he was 41 years old. Fatima Radiyallahu Anha was born at that age. Stating this, a person named Abdullah ibn Muhammad ibn Sulaiman ibn Ja'far Al-Hashimi narrated that his grandfather said this. Such a report exists in Al-Hakim. Regarding the claim that she was born when the Messenger of Allah Sallallahu Alaihi Wasallam was 41 years old, among those who narrate this report, the identities of three individuals are unknown. If asked who the first person is, it is narrated by Abdullah ibn Muhammad ibn Sulaiman ibn Ja'far. No significant historical record or proof of reliability is found for him. He narrates through his father. His father also narrates through Muhammad ibn Sulaiman ibn Ja'far. As for who he is, in the books of Hadith details are not available. Similarly, from whom does he narrate? He narrates from Sulaiman ibn Ja'far, his grandfather. He is also a Majhul — an unknown narrator. So, an unknown person tells another person, who is also unknown, and he tells another person, who is also unknown. It is only through such individuals that this report has been recorded in Al-Hakim. Therefore, regarding the claim that in the 41st year she was born, to state this, we cannot accept this as evidence. If asked why, it is because it comes through unknown individuals that this report has arrived.
+
+If asked what some others have claimed: when the Messenger of Allah Sallallahu Alaihi Wasallam was 36 years old, she was born. Fatima Radiyallahu Anha. When she came to Madinah and got married, to determine her age, it can only be measured using this. In that case, if it is said she was born when he was 41, when arriving in Madinah, she would be 12 years old. If she is born at 41, he migrated at 53. So, she would have been exactly 12 years old when arriving in Madinah. In this report, if asked what they say, and if asked who is saying this, Abdullah ibn Mu'ammal is reported to have said it: "Wulidat Fatima Radiyallahu Anha qabla an-Nubuwwati bi arba'i sineen." Prophet Muhammad Sallallahu Alaihi Wasallam — she was born 4 years before he became a Prophet. She was born 4 years before the Messenger of Allah became a Prophet. 4 years before means the Messenger of Allah was 36 years old. That means when Prophet Muhammad Sallallahu Alaihi Wasallam was 36 years old, Fatima Radiyallahu Anha was born. So, she was born in the 36th year of the Messenger of Allah. That means her age would be 17 when she arrived in Madinah. Because the Messenger of Allah migrated exactly at the age of 53. So, when arriving in Madinah, should the age of Fatima Radiyallahu Anha be taken as 12 or should it be taken as 17? There are reports for both. But is this report at least correct? If asked, it is not correct. As such an important person that she was, when she embraced Islam, including when she died, only contradictory reports are available. They are available as inaccurate reports as well. The one narrating this report, Abdullah ibn Mu'ammal — if asked who he is, as a weak narrator he is unanimously concluded to be. He is the one saying this. He narrates through his father. His father is a Sahabi. If asked who he is, he is a weak individual. Unanimously, everyone agrees he is a person who narrates with contradictions. The one narrating from him, Abdul Aziz ibn Imran, comes as the next narrator. He is suspected to be a liar. He is not just a weak narrator; he is suspected of lying because many of his reports contradict authentic reports. He is the one who was considered to be suspected of being a liar. It is narrated only through such a route. A person narrating from him is narrated by someone named Ibrahim. He is okay. A person narrating from him is narrated by someone named Abdullah ibn Shabib. He is also Matruk ul-Hadith. His Hadith must be abandoned. That is, a suspected person, a person suspected that he would tell lies. Only through such people is this report present with a chain of narrators in the book Tarikh Isbahan. That means there is no evidence that Fatima Radiyallahu Anha was born at the 36th age of the Messenger of Allah. There is a report that Fatima Radiyallahu Anha was born at the 41st age of the Messenger of Allah, but there is no evidence. There is a report that Fatima Radiyallahu Anha was born at the 36th age of the Messenger of Allah, but the report is not correct. Similarly, if asked what is said in that Tarikh al-Tabari, they reconstruct the Kaaba. When do all the people in Makkah gather and do construction work to renovate this Kaaba again? If asked when this happens, it happens at the 35th age of the Messenger of Allah. Only when the Messenger of Allah became 35 years old was the Kaaba in a dilapidated state. Saying "Let us all join together and build this," those Mushriks did that construction work at the 35th age of the Messenger of Allah, that is, a time when Islam had not come. We have all read that when it was built at that time, the Messenger of Allah also took part in it, haven't we? This happens at the 35th age of Messenger of Allah. That is the year Wulidat Fatima bint Rasulullahi Sallallahu Alaihi Wasallam. Only when the Kaaba was built at the 35th age of the Messenger of Allah did Fatima Radiyallahu Anha get born. Fatima was born at the 35th age of the Messenger of Allah. Fatima was born at the 36th age of the Messenger of Allah. Fatima was born at the 41st age of the Messenger of Allah. If asked whether this report that Fatima was born at this 35th age of Messenger of Allah is correct, this is narrated by someone named Ibn Abi Sabra. If asked what kind of person he is, Muttahamun bil-Wal'i. A person suspected that he would fabricate. He is not a weak person. He would say whatever he thinks as he wishes. Fabricating. Cannot say upon Allah. But upon the Messenger. He would fabricate and say. A person suspected that he would fabricate. Only through him this also narrated.
+
+Fatima Radiyallahu Anha was born at the 41st age of the Messenger of Allah. If said so, during Hijrah, when coming she would have been 13 years old. If kept that she would have been born at 36 age of Messenger of Allah, doing Hijrah and coming to Madinah she would be 17 years old. If kept that she was born at the 35th age of the Messenger of Allah, when coming to Madinah she would be 18 years old. So regarding Fatima Radiyallahu Anha, only three histories are available. All three are incorrect. All three narrators are fabricators, liars, weak people. It is said only through non-authentic people. So what should we do? Detail about this age, we do not have. If not, what should be done? Cannot make a decision keeping this. Even if there was only one report, we can say only this one is available, because there is no contradiction and moreover it is being a history, it can be taken. But it is contradictory. If this is accepted, some will ask why you did not accept that. If that is accepted, some will ask why you rejected this. Being it is contradictory, to us, Fatima Radiyallahu Anha's age is not known. Nobody knows. With authentic reports, there is no history for it. To us, a matter, some things are available enough to understand. What is available? During Prophet Sallallahu Alaihi Wasallam's initial period, that is, in the early period of Islamic propagation, what he would do.
+
+They would go to the Kaaba and pray. If asked what they would do when he prayed in the Kaaba, watching this keenly, and if asked what they would do to torment the Messenger of Allah, they would all gather around and ask, "Will someone go, slaughter a camel, and bring its intestines along with the dung, and place it on his head? Who among you is ready?" This report is found in the 520th Hadith of Bukhari. Accordingly, one person would go and bring a camel's intestines. When the Prophet Sallallahu Alaihi Wasallam made Sajdah: "Falamma sajada Rasulullahi Sallallahu Alaihi Wasallam, wada'ahu bayna katifayhi." While he was making Sajdah, between his two shoulders, he went and placed those intestines. As soon as it was placed: "Wa thabata an-Nabiyyu Sallallahu Alaihi Wasallam sajidan." Rasulullah Sallallahu Alaihi Wasallam remained in Sajdah. "Fa dahikoo." They were laughing: "Hatta mala ba'duhum ila ba'din minad-dahiki." While laughing, they leaned on one another, and fell over one another in laughter. This was a great celebration for them. Ibn Mas'ud narrates that it happened this way. While this was happening, "Fantalaqa muntaliqun." Someone went and told Fatima. That is, when this incident occurred, what would Fatima's age have been? I am mentioning this to help understand that. This is an authentic report. It is in Bukhari, Hadith number 520. Regarding those camel's intestines, as soon as they were placed, to Fatima, if it is said that someone went and told her, if Fatima had been a five-year-old child, they couldn't have gone and told her, could they? Even if she had been an eight or ten-year-old child, they wouldn't have told her. If she was someone who had somewhat reached the age of puberty, or was close to it, only then would they go and give information to her. They went and told Fatima: "Wa hiya juwayriyyatun." She was a young girl. "Young girl" refers to the period before reaching the age of puberty, a stage prior to it. It is not childhood. But it is a stage slightly before reaching puberty. She came and she was a young girl. While the Messenger of Allah was in the state of Sajdah, Fatima came running, removed those camel intestines, and scolded them. Those who did such a thing, she also reprimanded. If Fatima Radiyallahu Anha was doing all this, it means she was a mature person at that time. This happened in the early period. After that, Rasulullahi Sallallahu Alaihi Wasallam started praying secretly in the house of Arqam Radiyallahu Anhu. Furthermore, Rasulullahi Sallallahu Alaihi Wasallam started propagating secretly. That incident occurred in the early period. In such a case, Fatima was at an age where she understood such details. She had reached that stage. This incident most probably happened during the 45th year of the Messenger of Allah. That being the case, it is impossible that Fatima Radiyallahu Anha was born during the 41st year of the Messenger of Allah. If Fatima Radiyallahu Anha had been born during the 41st year of the Messenger of Allah, she would have only been a four-year-old child. Keeping this in mind, we have already stated that the report claiming Fatima Radiyallahu Anha was born during the 41st year of the Messenger of Allah is weak. Therefore, based on the events that occurred, Fatima Radiyallahu Anha was at an age where she could comprehend these incidents. That is why Ibn Mas'ud Radiyallahu Anhu narrates that someone went to Fatima Radiyallahu Anha and said, "This is happening, and I am unable to stop it." Some commentators say that "someone" could only have been Ibn Mas'ud Radiyallahu Anhu himself. Therefore, it cannot be said at all that Fatima Radiyallahu Anha was born during the 41st year of the Messenger of Allah. It is only possible that she was born during the 33rd, 35th, or 36th year of the Messenger of Allah.`
+  },
+
+  {
+    sr: 2,
+    title: "பஜர் தொழுமுடியாமல் தூக்கம் வந்தால் தூங்கலாம் என்று வரும் ஹதீஸை எப்படி விளங்குவது",
+    videoLink: "https://onlinepj.co.in/videos/?id=1127418450",
+    duration: "08:45",
+    date: "20/04/2026",
+    amount: 2500,
+    payment: "done",
+    tamil: `காரைக்காலில் இருந்து ஹசனத்தீன் என்பவர் கேட்கிறார். சென்ற ஞாயிற்றுக்கிழமை, சென்ற என்பது ஒரு இரண்டு மூன்று மாதங்களுக்கு முந்தைய ஒரு கேள்வி. அவர் அன்றைக்கு எழுதி இருக்கிறார். வரிசைப்படி இப்போது தான் நாம் அந்த கேள்வியை எடுக்கிறோம். சென்ற ஞாயிற்றுக்கிழமை லைவில் நான் பேசும்போது ஃபஜ்ர் தொழுகையில் தூக்கம் வந்தால் தொழுகையை விட்டு விட்டு தூங்கச் சென்று விடுங்கள் என்று சொன்னீர்கள். ஹதீஸ் சரியாக உள்ளது என்றாலும் இதை கேட்டு விட்டு தொழுகையை அலட்சியம் செய்து விடுவார்கள். பிறகு எல்லோரும் alarm வைத்து விட்டு 10 நிமிடம் தான் உள்ளது, 20 நிமிடம் தான் உள்ளது தூங்கலாமே என்று எல்லோருக்கும் அலட்சியம் வந்து விடும். ஆகையால் இந்த தூக்கம் யாருக்கு உகந்தது என்று தெளிவாக்கி இருக்கலாமே என்று கேட்கிறார்.
+
+அதாவது எந்த ஹதீஸை நான் சுட்டிக் காட்டிச் சொன்னேனோ அந்த ஹதீஸிலேயே அதற்கான தெளிவும் இருக்கிறது. ஃபஜ்ர் தொழுகையில் தூக்கம் வந்தால் தூங்குங்கள் எனும் கருத்தில் அந்த ஹதீஸ் இல்லை. அந்த ஹதீஸ் என்னவென்றால் ஒருவருடைய மனைவி தன் கணவரைப் பற்றி அல்லாவின் தூதரிடம் புகார் செய்கிறார். பல குற்றச்சாட்டுகள் சொல்கிறார். அந்த குற்றச்சாட்டுகளுக்கு அவருடைய கணவர் பதிலும் சொல்லி விடுகிறார். அந்த குற்றச்சாட்டில் ஒரு குற்றச்சாட்டு என்னவென்றால் என் கணவர் ஸுப்ஹுக்கு எழுவதில்லை, அதாவது ஃபஜ்ர் தொழுகைக்கு எழுவதில்லை. இது அந்த மனைவியுடைய குற்றச்சாட்டு. அதுக்கு அந்த கணவர் ரஸுலல்லாவிடம் என்ன விளக்கம் தருகிறார் என்றால் இந்த குற்றச்சாட்டை பொருத்த வரைக்கும் அவர் சொல்வது உண்மைதான். நான் ஃபஜ்ருக்கு எழுவதில்லை. ஏன் எழுவது இல்லை என்று கேட்டால் நாங்கள் உடல் உழைப்பு செய்யக்கூடிய ஒரு சமுதாயமாக இருக்கிறோம். அதுவும் இரவில் தான் அந்த வேலையை நாங்கள் செய்ய முடியும். இரவில் அதிக நேரம் விழித்திருந்து நாங்கள் வேலை செய்து விட்டு சுமார் மூன்று மணி அல்லது நான்கு மணியளவில் வந்து உறங்குவதன் காரணமாக ஸுப்ஹுக்கு எழ முடிவதில்லை. இதைப் போல் எங்களுடைய வேலைப்பளு அதிகமாக இருக்கிற காரணத்தினால் அதையும் இரவில் மட்டுமே செய்ய வேண்டி இருக்கிறது என்ற காரணத்தினால் நாங்கள் படுத்தால் உறங்கி விடுகிறோம். எங்களால் எழ முடிவதில்லை. ஆகவே தான் எழுந்து தொழுவது இல்லை என்று ஒரு விளக்கம் சொல்கிறார். அப்போது ரஸுலல்லா அவர்கள் சொல்கிறார்கள் நீங்கள் எப்பொழுது எழுகிறீர்களோ அப்பொழுது தொழுது கொள்ளுங்கள் என்று சொல்கிறார்கள்.
+
+இதில் இருந்தே அது யாருக்கு பொருந்தும் என்று மிகத் தெளிவாகத் தெரிகிறது. அந்த ஹதீஸின் படி யாருக்கு பொருந்தும் என்று சொன்னால் எல்லாரும் ஃபஜ்ர் தொழாமல் இருக்கலாம் என்கிற கருத்தைத் தராமல் மிகவும் தெளிவாக அவர் யார் என்றால் இரவில் வேலை பார்க்கக் கூடியவர், நள்ளிரவு வரை வேலை பாத்து விட்டு உறங்குபவர். அந்த நேரத்தில் உறக்கம் வந்தால் தூக்கம் மிகைத்து விடும். அந்த நேரத்தில் தொழவும் முடியாது. அந்த நேரத்தில் உறக்க மிகுதியால் அந்த ஸஹாபி உறங்கி விடுகிறார் போல் தெரிகிறது. 8 மணி, 9 மணி, 10 மணியளவில் எழுபவர் போல் தெரிகிறது. அப்போது ரஸுலல்லா என்ன சொல்கிறார்கள் என்றால் எழுந்த உடன் தொழுது விடுமாறு சொல்கிறார்கள்.
+
+அப்படி யாருக்கு இது போல் இரவில் வேலை பார்த்து விட்டு ஸுப்ஹுக்கு சிறிது நேரத்துக்கு முன்னர் தான் அவருக்கு உறங்க முடியும் என்கிற நிலையில் அவருடைய வாழ்க்கை முறை இருக்கிறதோ, அவ்வாறு யாருக்கு வாழ்க்கை முறை அமைந்து இருக்கிறதோ அவருக்குத்தான் அது பொருந்தும் என்று சொன்னார்கள் என்று அந்த ஹதீஸில் இருக்கிறது. அவ்வாறு இல்லாமல் நல்ல நிலையில் இருப்பவர்கள் இரவு 10 மணியளவில் உறங்கி விட்டு ஸுப்ஹுக்கு எழாமல் தாமதமாக எழுபவர்கள் இதை ஆதாரமாகக் காட்டக்கூடாது. மேலும் நம்மை மீறி அப்படி ஆகி விட்டால் அதிலும் அரிதாக நிகழ வேண்டும். ரஸுலல்லா அவர்களுக்கும் ஒரு நாள் அப்படி நிகழ்ந்திருக்கிறது. அரிதான முறையில் அப்படி நிகழ வேண்டும். ஆனால் இவருக்கு தினசரி அப்படி நடந்திருக்கிறது. யாருக்கு என்றால் ஹதீஸில் கேள்வி கேட்ட மனைவியால் புகார் கொடுக்கப்பட்ட ஸஹாபி இருக்கிறார் அல்லவா அவருக்கு. அதைத்தான் சென்ற லைவில் சொன்னோம். அந்த லைவில் சொன்னதில் இருந்தே அந்த சம்பவத்தில் இருந்தே உங்களுக்கு விளங்கும். இது எல்லாருக்கும் உள்ளது அல்ல. இது இவரைப் போல் உள்ளவர்களுக்கு மட்டுமே உரியது என்று விளங்கும். நீங்கள் கேட்ட காரணத்தால் நான் அதையும் இப்போது விளக்கி விட்டேன்.`,
+    english: `From Karaikkal, a person named Hasanathin is asking a question. Last Sunday — 'last' here refers to a question from two or three months ago. He had written it on that day. We are taking that question now in sequence. Last Sunday when I was speaking live, you said that if one feels sleepy during Fajr prayer, leave the prayer and go back to sleep. Even if the Hadith is correct, after hearing this, people will neglect the prayer. Then everyone will set an alarm and think there are only 10 minutes, there are only 20 minutes, let me sleep — everyone will become negligent. Therefore, could you have clarified for whom this sleeping is appropriate? That is what he is asking.
+
+That is, the very Hadith that I pointed to contains the clarification for this as well. That Hadith does not carry the meaning that one may sleep during Fajr prayer. What that Hadith says is — a wife complains to the Messenger of Allah about her husband and mentions several accusations. Her husband responds to those accusations as well. One of those accusations is — my husband does not wake up for Subhuh, that is, he does not wake up for Fajr prayer. This is the wife's accusation. The husband gives his explanation to the Messenger of Allah: regarding this accusation, what she says is true. I do not wake up for Fajr. If asked why — we are a community that does physical labour. And that too at night — we can only do that work at night. Staying awake for long hours at night and working, we come and sleep around three or four in the morning. Because of this we are unable to wake up for Subhuh. Similarly, our workload is very heavy and we can only do it at night — because of this reason, when we lie down we fall asleep. We are unable to wake up. That is why we do not wake up and pray. This is the explanation he gives. At that point the Messenger of Allah says — whenever you wake up, pray at that time.
+
+From this alone it is very clearly understood for whom this applies. According to that Hadith, without giving the impression that everyone may skip Fajr, it is very clearly — who is it for? For one who works at night, who works until midnight and then sleeps. At that time if sleep overcomes, sleep will overpower. At that time he cannot pray either. Due to excessive sleep at that time, it appears that the Sahabi fell asleep. It seems he would wake up around 8, 9, or 10 in the morning. At that point the Messenger of Allah says — pray as soon as you wake up.
+
+So for whoever works at night like this and can only sleep shortly before Fajr time — whose lifestyle is such — for whoever whose lifestyle is like this, it applies only to them. That is what is in that Hadith. Those who are not in such a situation — who sleep well around 10 at night and do not wake up for Fajr and wake up late — they should not use this as evidence. Furthermore, even if this happens to us beyond our control, it should occur only rarely. Even for the Messenger of Allah this happened once. It should happen only rarely. However for this person it happened daily. For whom? The Sahabi in the Hadith whose wife filed the complaint — for him. That is what we said in the previous live. From what was said in that live and from that incident itself you will understand — this does not apply to everyone. This applies only to those who are like him. Because you asked, I have now explained it as well.`
+  },
+
+  {
+    sr: 3,
+    title: "ஆரம்ப துஆ பலவீனமானதா?",
+    videoLink: "https://onlinepj.co.in/videos/?id=366687993",
+    duration: "15:20",
+    date: "20/04/2026",
+    amount: 4500,
+    payment: "done",
+    tamil: `அடுத்தது, தாராபுரத்தைச் சேர்ந்த அப்துல்லா என்பவர் ஒரு கேள்வி கேட்டிருக்கிறார். அவருக்குப் பதில் விரைவாக வேண்டுமாம். என்ன கேட்கிறார் என்றால், சுன்னத் ஜமாஅத் சார்பில் தொழுகையில் ஓதப்படும் ஆரம்ப துவாவான சுபஹானகல்லாஹும்ம என்ற துவா பலவீனம் என்று டிஎன்டிஜே சார்பில் கூறப்படுகிறது. அந்த துவா எதனால் பலவீனம், அந்த அறிவிப்பில் வரும் அறிவிப்பாளர் யார், பலவீனம் என்பதையும், எந்த கிதாபில் குறை கூறப்பட்டுள்ளது என்பதையும் பாகம் மற்றும் பக்க எண்ணுடன் சொல்லவும் என்று கேட்கிறார். இது ஒரு ஆலிம் கேட்ட கேள்வி என்றும் சொல்லியிருக்கிறார்.
+
+அதாவது, தக்பீர் கட்டிய உடனே மூன்று விதமான துவாக்களை மக்கள் ஓதுகிறார்கள். ஒன்று, தக்பீர் கட்டி அல்ஹம்து சூரா ஓதுவதற்கு முன்னாடி, சில பேர் வஜ்ஜஹ்து வஜ்ஹிய லில்லதீ என்ற துவாவை ஓதுகிறார்கள். சில பேர் அல்லாஹும்ம பாஇத் பைனீ வபைன கதாயாய என்ற துவாவை ஓதுகிறார்கள். பல ஹனபி மத்ஹப்காரர்கள் சுபஹானகல்லாஹும்ம வபிஹம்திக வதபாரகஸ்முக வதஆலா ஜத்துக வலா இலாஹ ஃகைருக என்ற துவாவை ஓதுகிறார்கள்.
+
+இந்த மூன்று துவாக்களில், நாம் என்ன சொல்கிறோம் என்றால், வஜ்ஜஹ்து ஓதுவதற்கு சரியான ஆதாரம் இருக்கிறது. அதை வேண்டுமானாலும் ஓதிக்கொள்ளுங்கள். அல்லது அல்லாஹும்ம பாஇத் பைனீ வபைன கதாயாய என்று ஓதுவதற்கும் ஆதாரம் இருக்கிறது. அதையும் ஓதிக்கொள்ளுங்கள். ஆனால், சனா என்று சொல்லப்படும் இந்த சுபஹானகல்லாஹும்ம துவாவை ஓதுவதற்கு ஏற்கத்தகுந்த ஆதாரம் இல்லை என்று நாம் சொல்கிறோம்.
+
+எதனால் சொல்கிறோம் என்றால், முதலாவதாக இது முஸ்லிம் நூலில் 606-வது ஹதீஸாக இடம் பெற்றிருக்கிறது. அதில் என்ன வருகிறது என்றால், உமர் இப்னுல் கத்தாப் அவர்கள் இந்தச் சொற்களைச் சத்தமிட்டுச் சொல்வார்கள் என்று வருகிறது. தொழுகையில் சொல்வார்கள் என்று வரவில்லை. இந்த சுபஹானகல்லாஹும்ம என்ற வார்த்தையை உமர் ரலியல்லாஹு அன்ஹு அவர்கள் சத்தமாகச் சொல்வார்கள் என்று மட்டுமே வருகிறது.
+
+இதில் பல விஷயங்கள் இருக்கின்றன. ஒன்று, இதில் ரசூலுல்லாஹ் சம்பந்தப்படவே இல்லை. உமர் ரலியல்லாஹு அன்ஹு சத்தம் போட்டுச் சொல்வார்கள் என்றுதான் வந்திருக்கிறது. இது முதல் விஷயம். அதனால் இதை நாம் ஆதாரமாக எடுத்துக்கொள்ள இயலாது. ஆனால், வஜ்ஜஹ்து மற்றும் அல்லாஹும்ம பாஇத் ஆகியவை ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் சொன்னதாகத் தெளிவாகச் சொல்லப்பட்டிருக்கிறது. இது உமர் சொன்னதாக வருகிறது.
+
+இரண்டாவதாக, உமர் அவர்கள் இதைத் தொழுகையில் சொன்னார்கள் என்றும் வரவில்லை. சாதாரணமாக இந்த வார்த்தையைச் சத்தம் போட்டுச் சொல்லியிருக்கிறார்கள். ஏதேனும் ஒரு சந்தர்ப்பத்தில் இறைவனைப் புகழ்வதற்காக சொல்லியிருக்கலாம். ஆனால், தொழுகையில் தக்பீர் கட்டிய உடனே இதைச் சொல்ல வேண்டும் என்பது போன்ற எந்த ஒரு விவரமும் இந்தச் செய்தியில் காணப்படவில்லை. இது இரண்டாவது விஷயம்.
+
+மூன்றாவதாக, இதை ஆதாரமாக எடுப்பவர்களே இதை அமல்படுத்துவதில்லை. அவர் சத்தமாகத்தான் ஓதியிருக்கிறார். அப்படியென்றால் நீங்கள் தக்பீர் கட்டிவிட்டு சுபஹானகல்லாஹும்ம வபிஹம்திக என்று சத்தமாக ஓத வேண்டும். ஆனால், அதை மட்டும் ரகசியமாக ஓதுகிறார்கள். சத்தமாக ஓதியதை ஆதாரமாகக் காட்டிவிட்டு ரகசியமாக ஓதுகிறார்கள். ஆக, தாங்களே அமல்படுத்தாத ஒரு விஷயத்தை அவர்கள் ஆதாரமாக வைக்கிறார்கள். இது மூன்றாவது விஷயம்.
+
+நான்காவதாக, உமர் ரலியல்லாஹு அன்ஹு அவர்கள் இப்படிச் சொன்னதாக முஸ்லிம் நூலில் வந்தாலும், இதை உமர் ரலியல்லாஹு அன்ஹுவிடம் இருந்து கேட்டு அறிவிக்கிறவர் அப்தா என்ற நபர் ஆவார். இந்த அப்தா என்பவர் உமர் ரலியல்லாஹு அன்ஹுவை சந்தித்ததே கிடையாது. அவருக்கும் உமருக்கும் இடையில் யாரோ விடுபட்டுப் போயிருக்கிறார்கள். உமர் ரலியல்லாஹு அன்ஹுவின் காலத்திற்கும் இந்த அப்தாவின் காலத்திற்கும் பொருத்தமில்லை என்று இமாம் நவவி அவர்கள் சொல்கிறார்கள்.
+
+அப்தா என்பவரின் பெயர் ஹாலா இப்னு அபீ லுபாபா என்பதாகும். உமரிடமிருந்து இவர் எதையுமே கேட்டது கிடையாது என்று இமாம் நவவி அவர்கள் சொல்கிறார்கள். அதேபோல், இதனுடைய அறிவிப்பாளர் தொடரில் விடுபட்டு இருக்கிறது என்று ஹாபிழ் இப்னு ஹஜர் அவர்களும் கூறுகிறார்கள். எனவே, உமர் சொன்னார் என்று அறிவிக்கும் நபர் உமர் காலத்தில் வாழ்ந்தவர் கிடையாது.
+
+ஆக, முதலில் ரசூலுல்லாஹ் சம்பந்தப்படவில்லை. இரண்டாவதாக, உமர் சம்பந்தப்பட்டாலும் தொழுகை என்று சொல்லப்படவில்லை. மூன்றாவதாக, சத்தம் போட்டுச் சொன்னார்கள் என்று வருகிறது. நான்காவதாக, இதை உமர் செய்ததாக அறிவிக்கும் நபர் உமர் காலத்தவர் இல்லை. இது முஸ்லிம் நூலில் வந்திருந்தாலும், முஸ்லிம் நூலிலும் இதுபோன்று அறிவிப்பாளர் விடுபட்ட சில ஹதீஸ்கள் இருக்கின்றன. அதனால், இது முஸ்லிம் 606-வது ஹதீஸாக இடம் பெற்றிருந்தாலும் இந்த காரணத்தினால் நாம் இதை எடுத்துக்கொள்ள முடியாது.
+
+அடுத்தது என்னவென்றால், திர்மிதியில் 225-வது ஹதீஸாக ரசூலுல்லாஹ்வைத் தொடர்புபடுத்தி ஒரு செய்தி வருகிறது. இந்த மாதிரி ரசூலுல்லாஹ்வைத் தொடர்புபடுத்தி நிறைய ஹதீஸ்கள் வந்தாலும், இந்த சுபஹானகல்லாஹும்ம துவாவை ஆதாரமாக எடுத்துக்கொள்பவர்களே அதில் மிகவும் சரியானது என்று இந்த ஹதீஸைத்தான் சொல்வார்கள். மற்றவற்றை மிகவும் பலவீனமானது என்று அவர்களே ஒதுக்கிவிடுவார்கள். இதை அமல்படுத்துகிறவர்கள் எதை மிகவும் சரியானது என்று சொல்கிறார்களோ, அந்த ஹதீஸ்தான் திர்மிதியில் உள்ள 225-வது ஹதீஸ்.
+
+அதில் என்ன வருகிறது என்றால், அபு ஸயீதுல் குத்ரீ அறிவிக்கிறார்கள். ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் இரவில் தொழுகைக்கு எழுந்து நிற்கும் பொழுது தக்பீர் சொல்வார்கள். பிறகு சுபஹானகல்லாஹும்ம வபிஹம்திக வதபாரகஸ்முக வதஆலா ஜத்துக என்று சொல்வார்கள். பிறகு அல்லாஹு அக்பர் கபீரா என்று சொல்வார்கள். பிறகு அஊது பில்லாஹிஸ் ஸமீஇல் அலீம் மினஷ் ஷைத்தானிர் ரஜீம் மின் ஹம்ஸிஹி வனஃப்கிஹி வனஃப்திஹி என்று சொல்வார்கள்.
+
+இதைத்தான் அவர்கள் ஆதாரமாகக் காட்டுகிறார்கள். இதை ஆதாரமாகக் காட்டினால் முழுமையாகக் காட்ட வேண்டும். இதில் என்ன வருகிறது என்று ஒன்னொன்றாகப் பாருங்கள். இதில் அறிவிப்பாளரும் சரியில்லை என்பது இரண்டாவது விஷயம். முதல் விஷயம் என்னவென்றால், இதில் உள்ளபடி இவர்கள் செய்கிறார்களா? இந்த சுபஹானகல்லாஹும்ம ஓதுபவர்கள் என்ன செய்ய வேண்டும்? முதலில் தக்பீர் கட்டிவிட வேண்டும். அதற்கப்பறம் சுபஹானகல்லாஹும்ம ஓதிவிட்டீர்கள், சரி அதற்கடுத்து என்ன செய்ய வேண்டும்?
+
+அல்லாஹு அக்பர் கபீரா என்று பின்னாலும் ஒருமுறை சொல்ல வேண்டும். முதலில் அல்லாஹு அக்பர் என்று ஒருமுறை சொல்லிவிட வேண்டும். பிறகு சுபஹானகல்லாஹும்ம வபிஹம்திக வதபாரகஸ்முக வதஆலா ஜத்துக வலா இலாஹ கைருக என்று இரண்டாவதாகச் சொல்ல வேண்டும். மூன்றாவதாக அல்லாஹு அக்பர் கபீரா என்று சொல்ல வேண்டும்.
+
+நான்காவதாக அஊது பில்லாஹிஸ் ஸமீஇல் அலீம் மினஷ் ஷைத்தானிர் ரஜீம் மின் ஹம்ஸிஹி வனஃப்கிஹி வனஃப்திஹி என்று சொல்ல வேண்டும். இவ்வளவு சொல்கிறார்களா? இதைத்தான் நீங்கள் ஆதாரமாகக் காட்டுகிறீர்கள் என்றால், இதை ஆதாரமாகக் காட்டினால் முழுமையாக அமல்படுத்த வேண்டும். அதில் உள்ள ஒரு பகுதியை மட்டும் எடுத்துக்கொள்வது எப்படிச் சரியாகும்? தாங்களே இதை மாற்றுகிறார்கள் என்பது இதிலிருந்து விளங்குகிறது.
+
+அது போக, இது இரவில் எழுந்து தொழும் பொழுது என்று வந்திருக்கிறது. எனவே, இது கடமையான தொழுகைக்கு உரியது கிடையாது. அவர்கள் காட்டும் ஹதீஸிலேயே இரவில் தொழுகைக்காக நிற்கும் பொழுது என்று வரும்பொழுது, அப்படியாவது நீங்கள் சட்டம் எடுத்தீர்கள் என்றால் இந்த ஹதீஸை அமல்படுத்துகிறீர்கள் என்று அர்த்தம். இரவில் எழுந்து தொழுகைக்கு என்று சொன்னால் மற்ற நேரங்களில் இல்லை என்றுதானே விளங்க வேண்டும்?
+
+அப்படியென்றால் ஐந்து நேரத் தொழுகையிலும் இது இல்லை அல்லவா? இரவுத் தொழுகையில் தனியாகத் தொழும்போது இதைச் சொல்லிக்கொள்ளலாம் என்று நீங்கள் சொன்னால், இந்த ஹதீஸை அவர்கள் அமல்படுத்துகிறார்கள் என்று ஒத்துக்கொள்ளலாம். எனவே, இரவில் என்று வருவது ஒன்று. இதைத் தொடர்ந்து இன்னும் இரண்டு திக்ருகள் வருகின்றன, அவற்றை அவர்கள் செய்யத் தவறுகிறார்கள் என்பது இரண்டு. இதையெல்லாம் கவனிக்க வேண்டும்.
+
+அதற்கடுத்து என்னவென்றால், அவர்கள் எதைச் சரி என்று சொல்கிறார்களோ, அதில் அலி பின் அலி என்பவர் ஒரு அறிவிப்பாளராக வருகிறார். இந்த அலி பின் அலி என்பவரை நிறைய அறிஞர்கள், குறிப்பாக யஹ்யா பின் ஸயீது மற்றும் அஹ்மத் இப்னு ஹம்பல் போன்றவர்கள், குறை சொல்லி இது சரியான ஹதீஸ் கிடையாது என்று சொல்லியிருக்கிறார்கள். இந்த காரணத்தை திர்மிதி இமாம் அவர்களே இந்த ஹதீஸோடு சேர்த்து விளக்கியிருக்கிறார்.
+
+இந்த சுபஹானகல்லாஹும்ம என்பது உமர் சொன்னதாக வருவதாலும், அதன் அறிவிப்பாளர் சரியில்லாத காரணத்தினாலும், தொழுகையில் என்று வராத காரணத்தினாலும், சத்தம் போட்டுச் சொன்னார் என்று வருகிற காரணத்தினாலும், அபு ஸயீது அறிவிக்கிற ஹதீஸ்தான் மிகவும் சரியானது என்று நினைக்கிறார்கள். ஆனால், அந்த ஹதீஸிலும் அது மட்டுமாக வரவில்லை. அல்லாஹு அக்பர், சுபஹானகல்லாஹும்ம, அல்லாஹு அக்பர் கபீரா, அஊது பில்லாஹி என்று இவ்வளவு சொல்ல வேண்டும் என்று வருகிறது. இவற்றையெல்லாம் அவர்கள் சொல்லாத காரணத்தினாலும், இரவில் நின்று தொழும்போது என்று வருகிற காரணத்தினாலும், அதன் அறிவிப்பாளர் அலி பின் அலி என்பவர் மீது விமர்சனம் இருக்கிற காரணத்தினாலும், இதையெல்லாம் விட்டுவிட்டு எந்த விமர்சனமும் இல்லாத உறுதியான ஹதீஸ்கள் தொழுகையைப் பற்றி எப்படி வருகின்றன என்று பார்க்க வேண்டும்.
+
+அல்லாஹ்வின் தூதரே, நீங்கள் தக்பீர் கட்டி ஓதுவதற்கு இடையில் நாங்கள் பார்க்கும்போது உங்கள் வாய் அசைகிறது, ஏதோ ஓதுவது போலத் தெரிகிறது, அது என்ன என்று விளக்கம் கேட்கிறார்கள். நீங்கள் தொழுகிறீர்கள், அல்லாஹு அக்பர் என்று சொல்வது எங்களுக்கு விளங்குகிறது. அதற்கப்பறம் கொஞ்ச நேரம் அமைதியாக நிற்கிறீர்கள். பிறகு அல்ஹம்துலில்லாஹி ரப்பில் ஆலமீன் என்று ஓதுகிறீர்கள். இந்த அமைதியாக நிற்கும் நேரத்தில் நாங்கள் உற்றுப் பார்த்தால் உங்கள் வாய் அசைகிறது.
+
+அப்படியென்றால் அந்த நேரத்தில் நீங்கள் என்னதான் ஓதுவீர்கள் என்று அபு ஹுரைரா அவர்கள் கேட்கும்பொழுது, ரசூலுல்லாஹ் அவர்கள் அல்லாஹும்ம பாஇத் பைனீ வபைன கதாயாய கமா பாஅத்த பைனல் மஷ்ரிக்கி வல் மஃக்ரிபி என்று அந்த துவாவை ஓதிக்காட்டுகிறார்கள் என்று நாம் பார்க்கிறோம்.
+
+இதிலிருந்து நீங்கள் என்ன விளங்க வேண்டும்? இவ்வளவு தெளிவாகத் தொழுகை என்று குறிப்பிடப்பட்டு, புகாரியிலும் இன்னும் ஏராளமான ஹதீஸ் நூல்களிலும் வந்திருக்கிற இவ்வளவு உறுதியான ஆதாரத்தை ஏன் வெறுக்க வேண்டும்? நாங்கள் ஹனபிகள் என்று சொல்லிக்கொண்ட காரணத்தினால் இவ்வளவு அழகான ஒரு அறிவிப்பு வந்தாலும் நாங்கள் விட்டுவிடுவோம் என்பது சரியா?
+
+தொழுகை விஷயத்தில் நமக்கு ஏன் தனி நபர்கள் மீது விருப்பம் வர வேண்டும்? அல்லாஹ்வின் ரசூல் மீதுதானே விருப்பம் வர வேண்டும்? ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் இதைச் செய்தார்கள் என்று ஆதாரமாகக் கிடைக்கும்போது, அல்லாஹும்ம பாஇத் ஓதுங்கள் அல்லது வஜ்ஜஹ்து ஓதுங்கள். இது பலவீனமானதாக இருப்பதுதான் சுபஹானகல்லாஹும்ம ஓதுவது சரி கிடையாது என்பதற்குக் காரணம்.`,
+    english: `Next, Abdullah from Dharapuram has asked a question. He needs a quick reply. What he is asking is that TNTJ states that the opening supplication 'Subhanakallahumma', which is recited in prayer on behalf of the Sunnat Jamath, is weak. Why is that dua weak? Who is the narrator mentioned in that report? He also asked to explain what exactly the weakness is, and in which book it has been criticized, including the volume and page number. He mentioned that this is a question asked by an Aalim.
+
+That is, as soon as the Takbeer is pronounced, people recite three different types of duas. First, before reciting Surah Fatiha after the Takbeer, some people recite the dua 'Wajjahtu wajhiya lilladhi'. Some people recite the dua 'Allahumma ba'id baini wa baina khatayaya'. Many followers of the Hanafi Madhhab recite the dua 'Subhanakallahumma wa bihamdika wa tabarakasmuka wa ta'ala jadduka wa la ilaha ghairuka'.
+
+Among these three duas, what we say is that there is authentic proof for reciting 'Wajjahtu'; you can recite it if you wish. Or there is also proof for reciting 'Allahumma ba'id'; you can recite that too. But we say that there is no acceptable evidence to recite this 'Subhanakallahumma' dua, which is referred to as Sana.
+
+The reason we say this is, firstly, it is recorded as the 606th Hadith in Sahih Muslim. What it says is that Umar ibn al-Khattab would say these words aloud. It does not say he would say it in prayer; it only says that Umar Radiyallahu Anhu would say these words, 'Subhanakallahumma', aloud.
+
+There are several issues in this. Number one, the Messenger of Allah is not involved in this at all. It only states that Umar Radiyallahu Anhu would say it aloud. Therefore, we cannot take this as evidence. However, it is clearly stated that 'Wajjahtu' and 'Allahumma ba'id' were said by Rasul Sallallahu Alaihi Wasallam. This one is reported as a saying of Umar.
+
+Secondly, it does not even state that Umar said this during prayer. He simply said this phrase aloud. He might have said it to praise Allah on some occasion. But there is no detail found in this report indicating that it should be said in prayer immediately after the Takbeer. This is the second point.
+
+Thirdly, those who take this as evidence do not practice it themselves. He recited it aloud, did he not? Then you should pronounce the Takbeer and recite 'Subhanakallahumma wa bihamdika' aloud. But they recite it silently. They show the loud recitation as evidence but recite it silently. Thus, they are using something as evidence that they themselves do not practice. This is the third point.
+
+Fourthly, even though it is mentioned in Sahih Muslim that Umar Radiyallahu Anhu said this, the narrator who heard this from Umar Radiyallahu Anhu and reported it is a person named Abdah. This Abdah had never even met Umar Radiyallahu Anhu. Someone has been omitted in the chain between him and Umar. Imam Nawawi says that the time period of Umar Radiyallahu Anhu and the time period of this Abdah do not match.
+
+The name of this Abdah is Hala ibn Abi Lubaba. Imam Nawawi says that he never heard anything from Umar. Similarly, Hafiz Ibn Hajar also says there is a disconnection in its chain of narrators. Therefore, the person claiming that Umar said this did not live during the time of Umar.
+
+So, firstly, the Messenger of Allah is not involved. Secondly, even if Umar is involved, it is not mentioned to be in prayer. Thirdly, it states he said it aloud. Fourthly, the person reporting that Umar did this was not from his time. Although it appears in Sahih Muslim, there are a few hadiths in Sahih Muslim with such missing narrators. Therefore, even if it is recorded as the 606th Hadith in Muslim, we cannot accept it for this reason.
+
+Next, there is a report associating it with the Messenger of Allah as the 225th Hadith in Jami' at-Tirmidhi. Even though there are many hadiths associating this with the Messenger of Allah, those who take the 'Subhanakallahumma' dua as evidence will claim this specific hadith is the most authentic one. They themselves will dismiss the others as very weak. The hadith that the practitioners consider the most authentic is this 225th hadith in Tirmidhi.
+
+What it says is, Abu Sa'id al-Khudri narrates: When Rasul Sallallahu Alaihi Wasallam would rise for prayer in the night, he would pronounce the Takbeer. Then he would say 'Subhanakallahumma wa bihamdika wa tabarakasmuka wa ta'ala jadduka'. Then he would say 'Allahu Akbar Kabira'. Then he would say 'A'udhu billahis sami'il alim minash shaitanir rajim min hamzihi wa nafkhihi wa nafthihi'.
+
+This is what they show as evidence. If they show this as evidence, they must show it completely. Look at what is in it one by one. The second issue is that its narrator is also flawed. But the first issue is: do they practice according to what is in this? What should those who recite 'Subhanakallahumma' do? First, they must pronounce the Takbeer. After that, having recited 'Subhanakallahumma', what should be done next?
+
+They should say 'Allahu Akbar Kabira' once again afterwards. First they must say 'Allahu Akbar' once; then recite 'Subhanakallahumma wa bihamdika wa tabarakasmuka wa ta'ala jadduka wa la ilaha ghairuka' secondly; and thirdly they must say 'Allahu Akbar Kabira'.
+
+Fourthly, they must recite the dua 'A'udhu billahis sami'il alim minash shaitanir rajim min hamzihi wa nafkhihi wa nafthihi'. Do they say all this? If this is what you show as evidence, you must implement it entirely. How is it right to take only one part of it? This shows that they are altering it themselves.
+
+Moreover, this is reported as being said when rising to pray in the night. Therefore, this does not apply to the obligatory prayers. Even in the hadith they present — when it says 'when standing for prayer in the night' — it means you are implementing this hadith only if you follow that condition. If it says 'for prayer in the night', should it not be understood that it does not apply at other times?
+
+So it is not present in the five daily prayers, is it? If you said that one can recite this when praying alone at night, we could agree that they are implementing this hadith. So the specification of 'in the night' is one thing. Following that, two more dhikrs are mentioned which they fail to do — that is the second thing. All this needs to be noted.
+
+Next, in what they consider authentic, a narrator named Ali bin Ali appears. Many scholars, notably Yahya bin Sa'id and Ahmad ibn Hanbal, have criticized this Ali bin Ali, stating that this hadith is not authentic. Imam Tirmidhi himself has explained this reason right alongside the hadith.
+
+Because this 'Subhanakallahumma' is reported as a saying of Umar, and its narrator is flawed, and it is not mentioned to be during prayer, and it says he said it aloud — they consider the hadith narrated by Abu Sa'id to be the most authentic. But even in that hadith it does not come alone. It requires saying 'Allahu Akbar', 'Subhanakallahumma', 'Allahu Akbar Kabira', and 'A'udhu billahi'. Because they do not recite all of this, and because it specifies standing for prayer at night, and because there is criticism against its narrator Ali bin Ali — leaving all this aside, we should look at how flawless and solid hadiths regarding prayer are reported.
+
+O Messenger of Allah, when you pronounce the Takbeer and before reciting, we see your lips moving — it looks like you are reciting something. What is it? You pray, and we hear you say 'Allahu Akbar'; then you stand silently for a while; then you recite 'Alhamdulillahi Rabbil Alamin'. During this silent pause, if we watch closely, your lips are moving.
+
+So what exactly do you recite during that time? When Abu Huraira asked this, we see that Rasulullah taught the dua: 'Allahumma ba'id baini wa baina khatayaya kama ba'atta bainal mashriqi wal maghribi.'
+
+What should you understand from this? When it is so clearly specified as being in prayer, and is recorded in Bukhari and numerous other hadith books as strong and established evidence, why should you reject it? Just because we call ourselves Hanafis, is it right to say we will ignore even such a beautiful report?
+
+In matters of prayer, why should we have preferences based on individuals? Our preference should only be for the Messenger of Allah. When we have evidence that Rasul Sallallahu Alaihi Wasallam did this, recite 'Allahumma ba'id' or recite 'Wajjahtu'. The fact that it is weak is the reason why reciting 'Subhanakallahumma' is not correct.`
+  },
+
+  {
+    sr: 4,
+    title: "பஜரு மற்றும் வைகறை இரண்டும் ஒன்றா?",
+    videoLink: "https://onlinepj.co.in/videos/?id=414201399",
+    duration: "10:15",
+    date: "20/04/2026",
+    amount: 3000,
+    payment: "pending",
+    tamil: `கோயம்புத்தூரைச் சேர்ந்த முகம்மது அர்சத் என்பவர் கேட்கிறார் — பஜ்ர் தொழுகையின் ஆரம்ப நேரத்தை எப்படிக் கண்டுபிடிப்பது? இணையதளத்தில் 25/4/2020 அன்று கோயம்புத்தூரில் வைகறை நேரம் என்று தேடினால் காலை 5:44 என்று வருகிறது. அதே நாளில் கோயம்புத்தூர் பஜ்ர் தொழுகையின் நேரம் என்று தேடினால் அதிகாலை 4:53 என்று வருகிறது. இரண்டும் முரண்பாடாகக் காட்டுகிறதே என்று கேட்கிறார்.
+
+இதில் எந்த முரண்பாடும் கிடையாது. வைகறை என்றால் பஜ்ர் என்று யார் சொன்னது? வைகறை என்பது பஜ்ர் தொழுகை முடியும் நேரமாகும். அடுத்த நாள் ஆரம்பிக்கும் நேரமாகும். நீங்கள் வைகறை நேரத்தைத் தேடிப் பார்த்துவிட்டு அதனை பஜ்ர் நேரம் என்று தவறாக முடிவு செய்கிறீர்கள்.
+
+பஜ்ர் என்பது வைகறைக்கு முன்னால் உள்ள நேரமாகும். கிழக்கு வெளுக்கும் நேரமே பஜ்ர் ஆகும். அதிலிருந்து சுமார் 80 நிமிடங்களுக்குப் பிறகுதான் சூரியன் உதிக்கும். வைகறை என்பது சூரியன் உதிக்கத் தொடங்கும் நேரமாகும். நோன்பை முடிக்கும் நேரம் அல்ல — நோன்பு தொடங்கும் நேரமே பஜ்ர் ஆகும்.
+
+சுபுஹ் தொழுகையை முடிப்பதற்கான இறுதி நேரத்தையே வைகறை என்று கூறுவார்கள். வைகறை என்பது வேறு, சுபுஹ் என்பது வேறு. சுபுஹ் தொழுகையின் ஆரம்ப நேரத்திற்கும் வைகறைக்கும் எவ்விதச் சம்பந்தமும் இல்லை.
+
+அகராதியில் வைகறை என்பதற்கான பொருளைப் பார்த்தால் — கதிரவன் கிழக்கே எழத் தொடங்கும் சிறு காலைப் பொழுது என்று இருக்கும். சூரியன் உதிக்கத் தொடங்கும் அந்தச் சிறு காலைப் பொழுதைத்தான் வைகறை என்று கூறுவார்கள்.
+
+வைகறை என்றால் விடியற்காலை என்று பொருளே தவிர பஜ்ர் என்று பொருள் கிடையாது. பஜ்ர் நேரம் ஆரம்பித்து சுமார் 80 நிமிடங்களுக்குப் பிறகுதான் வைகறை நேரம் வரும். எனவே இணையத்தில் பஜ்ர் என்று தேடியபோது 4:53 என்று காட்டியது — அதுதான் உண்மையான பஜ்ர் நேரம். அதுவே சஹர் உணவு உண்பதற்கான முடிவு நேரமுமாகும். அந்த பஜ்ர் தொழுகைக்கான நேரம் முழுமையாக முடிந்த பிறகுதான் வைகறை தொடங்கும்.`,
+    english: `Muhammad Arshad from Coimbatore asks — how do I find the starting time of the Fajr prayer? If I search for Vaikarai time in Coimbatore on 25/4/2020, it shows 5:44 AM. If I search for Fajr prayer time in Coimbatore on the same day, it shows 4:53 AM. Are these not contradicting each other?
+
+There is no contradiction here. Who told you that Vaikarai means Fajr? Vaikarai is the time when the Fajr prayer ends. It is the time when the next day begins. You are searching for the Vaikarai time and mistakenly concluding it is the Fajr time.
+
+Fajr is the time that comes before Vaikarai. The time when the eastern sky brightens is Fajr. The sun rises only about 80 minutes after that. Vaikarai is the starting time of the sunrise. Fajr is the time the fast begins — not the time it ends.
+
+The final time limit to complete the Subhuh prayer is what is called Vaikarai. Vaikarai is different; Subhuh is different. There is no connection between the starting time of the Subhuh prayer and Vaikarai.
+
+If you look up the meaning of Vaikarai in the dictionary, it says — the early morning time when the sun begins to rise in the east. That short morning period when the sun starts to rise is what is called Vaikarai.
+
+Vaikarai means early morning sunrise — it does not mean Fajr. That Vaikarai time comes only about 80 minutes after the Fajr time starts. Therefore, when you searched for Fajr on the internet and it showed 4:53 AM — that is the true Fajr time. That is also the ending time for eating the Sahar meal. Vaikarai begins only after the time limit for the Fajr prayer is completely over.`
+  },
+
+  {
+    sr: 5,
+    title: "பர்லான தொழுகையை வீட்டில் தொழலாமா?",
+    videoLink: "https://onlinepj.co.in/videos/?id=366201486",
+    duration: "11:50",
+    date: "20/04/2026",
+    amount: 2000,
+    payment: "pending",
+    tamil: `அடுத்து சலீம் என்பவர் ஒரு கேள்வி கேட்கிறார். எனக்கு ஒரு சில சந்தேகங்கள் உள்ளன அதற்குப் பதில் தாருங்கள் என்று கேட்டுவிட்டு ஒன்று பர்லான தொழுகையை வீட்டில் தொழலாமா உடம்பு சரியில்லாமல் பள்ளிவாசலுக்குச் சென்று தொழ முடியவில்லை ஆகையால் வீட்டில் தொழுதால் ஏற்றுக்கொள்ளப்படுமா என்று ஒரு கேள்வி கேட்கிறார்.
+
+இப்போது பள்ளிவாசலுக்குச் சென்றுதான் தொழ வேண்டும் என்று வலியுறுத்தக்கூடிய ஹதீஸ்கள் நிறைய இருக்கின்றன. ஜமாஅத்தாகத் தொழ வேண்டும் என்று ஹதீஸ் இருக்கிறது. அது இருபத்தி ஏழு மடங்கு நன்மை என்ற அடிப்படையில் இருக்கிறது. ஆனால் கேள்வி என்னவென்றால் உடம்பு சரியில்லாமல் இருக்கும்பொழுது வீட்டில் தொழுதால் அது ஏற்றுக்கொள்ளப்படுமா என்பதுதான் கேள்வி. அந்தக் கேள்விக்குப் பதில் சொல்வதாக இருந்தால் ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்களே அப்படித் தொழுதிருக்கிறார்கள். புகாரியில் 688 வது ஹதீஸ். ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் உடல்நிலை சரியில்லாத பொழுது தங்கள் வீட்டில் தொழுதார்கள். ரசூலுல்லாஹ் பள்ளிவாசலுக்கு ஜமாஅத்திற்குப் போகாமல் வீட்டிலேயே தொழுகிறார்கள் உடம்பு சரியில்லை என்றவுடனே மக்கள் எல்லாம் வீட்டுக்கே வந்துவிட்டார்கள். ஏனென்றால் ரசூலுல்லாஹ் இருக்கும்போது அவர்களைப் பின்பற்றித்தான் தொழ வேண்டும் என்று சொல்லி வீட்டிற்கு வந்துவிடுகிறார்கள். ஃபஸல்லா ஜாலிஸன் ரசூலுல்லாஹ் உட்கார்ந்து கொண்டு தொழுதார்கள் வஸல்லா வராஅஹு கவ்முன் கியாமா மக்கள் எல்லாம் நின்றுகொண்டு பின்பற்றித் தொழுதார்கள் என்றொரு ஹதீஸ் புகாரியில் 688 வது ஹதீஸில் வருகிறது. அப்பொழுது பள்ளிவாசலுக்குப் போக வேண்டும் என்பது இருந்தாலும் ரசூலுல்லாஹ்வுக்கு உடம்பு சரியில்லை என்றவுடனே அவர்கள் வீட்டிலேயே இருந்துவிட்டார்கள். மற்றவர்கள் அங்கே தொழுவார்கள் என்று பார்த்தால் அவர்கள் அப்படிச் செய்யாமல் இங்கு ரசூலுல்லாஹ்வின் வீட்டுக்கே வந்து பின்பற்றுவதற்காக வந்துவிடுகிறார்கள் என்கிற ஹதீஸைப் பார்க்கிறோம். இது உடம்பு சரியில்லாமல் இருக்கும்போது நடந்தது.
+
+அதே போன்று புகாரியில் 667 வது ஹதீஸ் அந்த ஹதீஸில் இத்பான் பின் மாலிக் என்று ஒரு சஹாபி ரசூலுல்லாஹ்வுடைய காலத்தில் இருந்தார். அவர் மதீனாவில் இல்லாமல் சற்றுப் புறநகர்ப் பகுதியில் அதாவது மதீனாவிற்கு வெளியே உள்ள பகுதியில் குடியிருந்தார். அவர் என்ன செய்வார் என்றால் அவருடைய சமுதாயத்திற்கு இமாமத் செய்வார் கொஞ்சம் மார்க்கம் தெரிந்தவர் என்று விளங்குகிறது. அவர் தனது சமூகத்திற்குச் சென்று இமாமத் செய்வார் அந்தப் பகுதியின் இமாம் இவர்தான் அந்தப் பகுதி மக்களுக்குத் தொழுகை நடத்துவார். அவர் கண் தெரியாதவராகவும் இருந்தார். அதாவது அவர் இங்கு ரசூலுல்லாஹ்வுடைய பள்ளிவாசலுக்கு வருவதற்கு அவர் அனுமதி கேட்கவில்லை அவர் தனது பகுதியில் தொழுகை நடத்திக்கொண்டிருக்கிறார். கண் தெரியாதவராக பார்வையற்றவராக இருந்தார். அவர் ரசூலுல்லாஹ்விடம் வந்து அல்லாஹ்வின் தூதரே இருள் வெள்ளம் இந்த மாதிரி மழையெல்லாம் ஏற்பட்டிருக்கிறது நானோ பார்வை இல்லாதவனாக இருக்கிறேன் அதனால் என் வீட்டிற்கு நீங்கள் கொஞ்சம் வாருங்கள் என் வீட்டில் வந்து ஒரு இடத்தில் நீங்கள் தொழுகை நடத்துங்கள் அதனை நான் எனது தொழுகை இடமாக ஆக்கிக்கொள்வேன் நீங்கள் தொழுத ஒரு இடத்தை நான் தொழும் இடமாக ஆக்கிக்கொள்வேன் என்று சொல்லி ரசூலுல்லாஹ்விடம் கோரிக்கை வைக்கிறார். ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவருடைய கோரிக்கையை ஏற்று அவர் வீட்டிற்குப் போகிறார்கள். அவருடைய பகுதிக்குச் சென்று நான் எங்கே தொழ வேண்டும் என்று நீ விரும்புகிறாய் என்று கேட்கிறார்கள். அவர் வீட்டில் இந்த இடத்தில் தொழுங்கள் என்று ஒரு இடத்தைக் காட்டுகிறார். அப்பொழுது ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அந்த இடத்தில் தொழுகிறார்கள். அதற்குப் பிறகு அவர் அங்கே தொழுது கொள்கிறார். கண் தெரியாத ஆளாக இருப்பதனால் அந்த ஜமாஅத் நடத்தும் இமாமாக இருந்தாலும் அவர் வரவில்லை. எனக்கு இயலவில்லை நான் கண் தெரியாமல் கஷ்டப்பட்டு வந்து தொழுது கொண்டிருக்கிறேன் எனக்குச் சிரமமாக இருக்கிறது பார்வையற்றவனாக இருக்கிறேன் அதனால் எனது வீட்டிலேயே நான் தொழ விரும்புகிறேன் நீங்கள் வந்து ஒரு இடத்தை தொழுது காட்டினீர்கள் என்றால் அந்த இடத்தை என்னுடைய முஸல்லாவாக தொழும் இடமாக நான் ஆக்கிக்கொள்வேன் என்று கேட்டார். ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவருக்காக அதைச் செய்தார்கள் என்று புகாரியில் 667 வது ஹதீஸில் இருக்கிறது. அப்பொழுது இயலவில்லை என்று சொன்னால் அப்படிச் செய்யலாம் என்பதற்கு இதையும் நாம் ஆதாரமாக எடுத்துக்கொள்ளலாம்.
+
+அதே போன்று புகாரி 670 வது ஹதீஸில் அனஸ் ரலியல்லாஹு அன்ஹு அறிவிக்கிறார்கள். அன்சாரிகளில் ஒரு மனிதர் வந்து ரசூலுல்லாஹ்விடம் சொல்கிறார் நான் உங்களோடு வந்து தொழுவதற்கு எனக்கு இயலவில்லை. அவர் அன்சாரி மதீனாவைச் சேர்ந்தவர். மதீனாவில் இருக்கக்கூடிய ஒரு நபராக இருந்தால் பள்ளிவாசலில் வந்து ரசூலுல்லாஹ்வைப் பின்பற்றித் தொழ வேண்டும் அல்லவா அப்படி அவருக்குத் தொழ முடியவில்லை. ஏன் முடியவில்லை என்று கேட்டால் அவர் மிகவும் சதைப்பிடிப்பாக இருந்தார். அந்த உடம்பைத் தூக்கிக் கொண்டு வர முடியவில்லை அவருக்கு உடம்பில் அதிகமான சதை போட்டு அந்த சதை போட்ட காரணத்தினால் தொழுதால் மூச்சு வாங்கும் போல் தெரிகிறது எனவே இயலவில்லை என்கிறார். நான் பள்ளிவாசலுக்கு வந்து உங்களைப் பின்பற்றித் தொழுவதற்கு எனக்கு இயலவில்லை என்கிறார் நோய் என்றெல்லாம் காரணம் சொல்லவில்லை அவர் என்ன காரணத்தினால் இயலவில்லை என்கிறார் என்றால் அவர் பருமனாக இருந்தார். சாதாரணப் பருமனாக இருந்தால் வந்திருப்பார் அந்தப் பருமன் எப்படியென்றால் அவருக்கு இங்கு வருவதற்கு முடியவில்லை என்கிற அளவிற்கு அவர் பருமனாக இருக்கிறார். உடம்பைத் தூக்கிக் கொண்டு வர முடியாத அளவுக்கு, அளவுக்கு மீறிய ஒரு சதை பிடித்தவராக இருக்கிறார். அவர் என்ன செய்கிறார் என்று கேட்டால் ரசூலுல்லாஹ்வுக்காக ஒரு உணவைத் தயார் செய்து ரசூலுல்லாஹ்வைக் கூப்பிட்டு எங்கள் வீட்டில் வந்து நீங்கள் சாப்பிடுங்கள் சாப்பிட்ட பின் எனக்கு நீங்கள் தொழுது காட்டுங்கள் அந்த இடத்தில் நானும் தொழுதுகொள்கிறேன் என்று சொல்கிறார். அப்பொழுது ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவரது விருந்தை ஏற்றுப் போய் அவருக்காக வேண்டி அந்த இடத்தில் இரண்டு ரக்அத் தொழுகிறார்கள் அதில் அவர் தொழ ஆரம்பித்துவிட்டார். இப்பொழுது இதிலிருந்து நாம் என்ன விளங்குகிறோம் என்றால் ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் காலத்தில் மதீனாவில் இருந்துகொண்டே கூட பள்ளிவாசலுக்கு வர முடியாது என்கிற ஒரு நிலைமையில் இருந்தவருக்கு வீட்டில் தொழுவதற்கு ரசூலுல்லாஹ் அனுமதி கொடுத்திருக்கிறார்கள்.
+
+அதே போன்று வீட்டில் தொழுதால் கூடுமா என்றுதானே கேட்கிறீர்கள் வீட்டில் தொழுதால் செல்லுமா என்று கேட்கிறீர்கள். வீட்டில் தொழுதால் செல்லுமா என்பதற்கு பதில் சொல்வதாக இருந்தால் முஸ்லிமில் 1054 முஸ்லிமில் எண் வித்தியாசப்படும் முஸ்லிமில் ஒரு ஹதீஸ் இருக்கிறது. ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் அவர்கள் மிகவும் அழகிய குணமுடையவர்களாக இருந்தார்கள் என்று அனஸ் ரலியல்லாஹு அன்ஹு அறிவிக்கிறார்கள். ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் நல்ல குணம் உடையவர்களாக இருந்தார்கள். சில நேரங்களில் எங்கள் வீட்டுக்கு வந்திருப்பார்கள் அந்த நேரம் பார்த்துத் தொழுகை நேரம் வந்துவிடும். அதாவது அனஸ் ரலியல்லாஹு அன்ஹு வீட்டுக்கு ரசூலுல்லாஹ் வருவார்கள் வரும்போது ஏதோ பேசிக்கொண்டிருக்கும் பொழுது ஜமாஅத்துடைய நேரம் இங்கேயே வந்துவிடும். பள்ளிவாசலிலிருந்து அனஸ் ரலியல்லாஹு அன்ஹு அவர்களின் வீட்டுக்கு வந்துவிடுகிறார்கள் அங்கேயே தொழுகையுடைய வக்து வந்துவிடுகிறது. உடனே ரசூல் ஸல்லல்லாஹு அலைஹி வஸல்லம் ஒரு விரிப்பை விரிக்கும்படி கட்டளையிடுவார்கள். விரித்த உடனே அதில் தண்ணீர் தெளித்துவிட்டு உடனே அதில் அவர்கள் தொழுவார்கள் அவர்கள் தொழும் போது உடனே நாங்கள் அவர்களுக்குப் பின்னால் நின்று தொழுவோம். இது கடமையான தொழுகைதான். இந்தக் கடமையான தொழுகையை ரசூலுல்லாஹ் மஸ்ஜிதுந் நபவியில்தான் தொழுவார்கள் அனஸ் வீட்டுக்கு வரும்பொழுது ஏதோ ஒரு நேரத்தில் பேசிக்கொண்டிருந்த வகையிலே தொழுகை நேரம் வந்துவிட்டது. தொழுகை நேரம் மறுபடியும் மஸ்ஜிதுந் நபவிக்கு போய்த் தொழ வேண்டும் என்று இல்லாமல் அங்கேயே தொழ வேண்டும் என்று நினைக்கிறார்கள். அப்பொழுது அந்தக் கடமையான தொழுகையை அனஸ் உடைய வீட்டில் தொழுகிறார்கள். அனஸ் அவர்களும் அவர்கள் அம்மாவும் ரசூலுல்லாஹ்வைப் பின்பற்றித் தொழுதார்கள் என்கிற ஒரு ஹதீஸ் இருக்கிறது. அப்பொழுது இதிலிருந்து என்ன விளங்குகிறது என்றால் வீட்டில் தொழுதல் என்பது செல்லாது என்பதெல்லாம் கிடையாது தக்க காரணம் இருக்க வேண்டும் அதற்கொரு காரணம் இருக்க வேண்டும். அந்த வகையில் இவை எல்லாம் ஒரு தக்க காரணம்தான். ரசூலுல்லாஹ் அவர்கள் தான் இமாம்.அவர்களே பள்ளிக்குப் போகாமல் விருந்தாளியாகப் போன இடத்தில் அவர்கள் அங்கே அந்தத் தொழுகையை நடத்தியிருக்கிறார்கள் என்பதையெல்லாம் நாம் பார்க்கிறோம். அதே நேரத்தில் முடியும் என்று சொன்னால் இந்தக் காரணம் இல்லாமல் இருக்குமேயானால் நாம் அந்தப் பள்ளிக்கு வருவதுதான் சிறந்தது அது இருபத்தி ஏழு மடங்கு நன்மையைப் பெற்றுத் தரும் என்பதனால். அதனால் அதைக் கூடாது என்று சொல்லக்கூடாது செல்லுபடியாகும் தகுந்த காரணம் இருக்க வேண்டும் தகுந்த காரணம் உங்கள் மனசாட்சிக்குத் தெரியும் ஒன்றுமில்லாததையெல்லாம் காரணம் என்று சொல்லிவிடக்கூடாது. ஒருவர் தகுந்த காரணம் என்று சொல்லக்கூடியது இன்னொருத்தர் தகுந்த காரணம் இல்லை என்று சொல்லலாம். அவரவர் அல்லாஹ்வுக்குப் பயந்து இதில் நமக்குத் தக்க காரணம் இருக்கிறது என்று நினைத்துக் கொண்டார்களேயானால் அதை அல்லாஹ் ஏற்றுக்கொள்வான் என்றும் அவருக்குச் சரியென்றும் படுமேயானால் அவர் இந்தக் காரணத்திற்காக வீட்டில் தொழுவது குற்றமில்லை.`,
+    english: `Next, a person named Saleem asks a question. He says, I have a few doubts, please give me an answer, and then asks one question: can obligatory prayers be prayed at home? I am unwell and unable to go to the mosque to pray, so if I pray at home, will it be accepted?
+
+Now, there are many hadiths that emphasize that one must go to the mosque to pray. There is a hadith that one must pray in congregation. It is based on the fact that it brings twenty-seven times the reward. But the question is, when unwell, if one prays at home, will it be accepted? To answer that question, Rasool Sallallahu Alaihi Wasallam himself prayed like that. It is the 688th hadith in Bukhari. When Rasool Sallallahu Alaihi Wasallam was unwell, he prayed in his house. Rasoolullah prayed at home instead of going to the mosque for the congregation. As soon as the people heard he was unwell, the people all came to his house. Because when Rasoolullah is present they must pray following him, they come to his house. Fasalla jalisan, Rasoolullah prayed sitting down, wasalla wara'ahu qawmun qiyama, the people all stood and prayed following him. Such a hadith comes in Bukhari, the 688th hadith. So, even though one should go to the mosque, as soon as Rasoolullah was unwell, they stayed in their house. Instead of praying there at the mosque, we see in this hadith that the people came to Rasoolullah's house to follow him. This happened when he was unwell.
+
+Similarly, there is the 667th hadith in Bukhari. During Rasoolullah's time, there was a Sahabi named Itban bin Malik. He did not live inside Medina but rather in the suburbs, that is, in an area outside Medina. He used to lead the prayer for his community; it is understood that he was somewhat knowledgeable about the religion. He would go to his community and lead the prayer. He was the Imam of that area; he conducted prayers for the people of that area. He was also blind. That is, he did not ask permission to come to Rasoolullah's mosque; he was conducting prayers in his own area. He was blind, without sight. He came to Rasoolullah and said, O Messenger of Allah, darkness, floods, and rain have occurred. I am a blind man. Therefore, please come to my house. Come to my house and conduct a prayer in one place. I will make that my place of prayer. I will make the place where you prayed my place of prayer. Rasool Sallallahu Alaihi Wasallam accepted his request and went to his house. Going to his area, he asked, where do you want me to pray? He pointed to a place in his house and said, pray in this place. Then Rasool Sallallahu Alaihi Wasallam prayed in that place. After that, he would pray there. Being a blind man, even though he was the Imam conducting the congregation. He said, I am unable to. I am struggling to come and pray without my sight. It is difficult for me. I am blind. Therefore, I want to pray in my own house. If you come and pray in a spot to show me, I will make that place my musalla, my place of prayer. Rasool Sallallahu Alaihi Wasallam did that for him. This is in Bukhari, the 667th hadith. So, if one is unable, we can take this as evidence that such a thing can be done.
+
+Similarly, in Bukhari, the 670th hadith, Anas Radiallahu Anhu narrates. A man from the Ansar came to Rasoolullah and said, I am unable to come and pray with you. He was an Ansari, a person from Medina. Even as a person living in Medina, should he not come to the mosque and pray following Rasoolullah? But he could not pray like that. When asked why he could not, it was because the man was very heavily built. He could not carry his body and come. That is, he put on a lot of flesh on his body, and because of that added flesh, he felt like he would lose his breath if he prayed, so he was unable. He said, I am unable to come to the mosque and pray following you. He did not give illness as a reason. When explaining why he was unable, he said he was obese. If he were ordinarily obese, he would have come; that obesity was such that he was at the point where he could not come here. He was excessively fleshy to the point where he could not carry his body. What did he do? He prepared some food for Rasoolullah, invited Rasoolullah, and said, come to my house and eat. After eating, pray and show me a spot. I will also pray in that place. Then Rasool Sallallahu Alaihi Wasallam accepted his invitation, went, and prayed two rak'ahs in that place for him. From then on, he started praying there. So, what do we understand from this? Rasoolullah gave permission to pray at home to a person who, even while living in Medina during Rasool Sallallahu Alaihi Wasallam's time, was in a situation where he could not come to the mosque.
+
+Similarly, you are asking if it is permissible to pray at home, if it is valid to pray at home. To say if it is valid to pray at home, there is a hadith in Muslim, 1054. The number in Muslim might vary, but there is a hadith in Muslim. Anas Radiallahu Anhu narrates that Rasool Sallallahu Alaihi Wasallam had a very beautiful character. Rasool Sallallahu Alaihi Wasallam had good character. Sometimes he would come to our house, and right at that time, the prayer time would arrive. That is, Rasoolullah would come to Anas Radiallahu Anhu's house, and while they were talking about something, the time for the congregation would arrive right there. He had come from the mosque to Anas Radiallahu Anhu's house, and the time for prayer arrived right there. As soon as it arrived, Rasool Sallallahu Alaihi Wasallam would order a mat to be spread. As soon as it was spread, water would be sprinkled on it, and he would pray on it. As soon as he was praying, we would stand behind him and pray. This was indeed an obligatory prayer. For this obligatory prayer, Rasoolullah would normally pray in Masjid an-Nabawi. When he came to Anas's house, while talking at some point, the prayer time arrived. Without feeling that he must go back to Masjid an-Nabawi and pray, he decided to pray right there. So, he prayed that obligatory prayer in Anas's house. There is a hadith that Anas and his mother prayed following Rasoolullah. So, what do we understand from this? It is not that praying at home is invalid; there must be a valid reason. There must be a reason for it. In this way, all of these are indeed valid reasons. Rasoolullah himself was the Imam. Without going to the mosque himself, he went as a guest to a place and conducted the prayer there. We see all of this. At the same time, if it is possible, if there is no such reason, it is better for us to come to the mosque, because it brings twenty-seven times the reward. Therefore, one should not say it is impermissible; it is valid. There must be a proper reason. Your conscience knows the proper reason. You should not state trivial things as a reason. What one person considers a proper reason, another might say is not a proper reason. If each person fears Allah and thinks, there is a valid reason for us in this, and if it seems right to them, then Allah will accept it. If a person genuinely believes their reason is sufficient, it is not a sin for him to pray at home for that reason.`
+  }
+
+  ,
+
+  {
+    sr: 6,
+    title: "ஃபர்லு சுன்னத் அளவுகோல் என்ன?",
+    videoLink: "https://onlinepj.co.in/videos/?id=350951051",
+    duration: "05:00",
+    date: "24/04/2026",
+    amount: 0,
+    payment: "pending",
+    tamil: `அடுத்து என்ன கேள்வி என்றால்,
+கடமையான விஷயங்களுக்கு அளவுகோல் என்ன?
+ஒரு விஷயம் வலியுறுத்தப்பட்டு,
+அதைச் செய்யாத போது தண்டனை இல்லை என்றால் அது கடமை கிடையாது.
+அது வலியுறுத்திச் சொல்லப்பட்ட சுன்னத்து.
+அந்த அடிப்படையில் தான் பெருநாள் தொழுகை, வித்ரு தொழுகை, திருமணம் இவையெல்லாம் வலியுறுத்திச் சொல்லப்பட்ட சுன்னத்
+என்று சில பிரச்சாரகர்கள் விளக்கம் கொடுக்கிறார்கள்.
+அது என்ன வலியுறுத்திச் சொல்லப்பட்ட சுன்னத்?
+இது யார் வைத்த பெயர்? மார்க்க அடிப்படையில் இது கூடுமா? புதிதாக உருவாக்கலாமா? என்று கேட்கிறார்கள். அதாவது என்ன கேட்கிறார்கள் என்றால்,
+இந்தப் பெருநாள் தொழுகையை சுன்னத்து என்றார்கள் அல்லவா?
+சுன்னத்து இல்லை, கடமை என்று நாம் சொன்னோம் அல்லவா?
+அதற்கு என்ன விளக்கம்
+கொடுக்கிறார்கள் என்றால்.
+பெருநாள் தொழுகையைக் கடமை என்று சொல்லக் கூடாது;
+அதை வலியுறுத்திச் சொல்லப்பட்ட ஒரு சுன்னத்து என்று தான் சொல்ல வேண்டும்.
+ஏன் என்று கேட்டால், பெருநாள் தொழுகையை விட்டால் இன்ன தண்டனை என்று சொல்லப்படவில்லை.
+தண்டனை என்று சொன்னால் தான் அது கடமையாகும்.
+ஒரு விஷயத்தை விட்டுவிட்டால் உனக்குத் தண்டனை கிடைக்கும் என்று சொன்னால் அது கடமையாகிவிடும்.
+தண்டனை சொல்லப்படவில்லை என்றால் அது வலியுறுத்தப்பட்ட சுன்னத்து என்று தான் சொல்ல வேண்டும் என்று ஒரு விளக்கம் கொடுத்து, பெருநாள் தொழுகையை சுன்னத்து என்று சொல்லக்கூடிய ஒரு குழுவைச் சேர்ந்தவர்கள் யாரோ, இவரிடம் சென்று சொல்லியிருக்கிறார்கள் போலிருக்கிறது.
+அப்படி ஒன்று இருக்கிறதா என்று கேட்கிறார்.
+எல்லாக் கடமைகளுக்கும் தண்டனைகள் சொல்லப்படவே இல்லை.
+சரி, நோன்பு மார்க்கத்தில் கடமையா இல்லையா? என்றால் கடமை. நோன்பை விட்டால் என்ன தண்டனை?
+தொழுகையை விட்டதற்காகத் தண்டனை இருக்கிறது.
+நோன்புக்குச் சிறப்பு தான் இருக்கிறதே தவிர தண்டனை சொல்லப்படவில்லை. நோன்பாளிகள் ரையான் வாசலில் நுழைவார்கள் என்றும், அல்லாஹ்வே கூலி கொடுப்பான் என்றும் கூறப்படுகிறதே தவிர நோன்பை விட்டால் காஃபிர் ஆகிவிடுவான் என்பது போல் ஏதாவது தண்டனை இருக்கிறதா?  என்றால் இல்லை. ஆக, நோன்பை விட்டதற்காகத் தண்டனை சொல்லப்படவில்லை.
+அதனால் நோன்பு கடமை இல்லை என்று சொல்வீர்களா?
+கடமையானவற்றில், சில கடமைகளுக்குத் தண்டனை சொல்லப்பட்டிருக்கும், சில கடமைகளுக்குத் தண்டனை சொல்லப்படாமல் இருக்கும். கடமையை விட்டதற்கு என்று ஒரு தண்டனையை அல்லாஹ் வைத்திருக்கிறான்.
+அல்லாஹ்வும் ரசூலும் ஒன்றை வலியுறுத்திவிட்டார்கள் என்றால், அதைக் கட்டாயம் செய்ய வேண்டும்.
+அல்லாஹ்வும் ரசூலும் வலியுறுத்திய பிறகு செய்யத் தவறினால், அது அல்லாஹ்விற்குச் செய்யும் பாவமாகும்.
+அதற்கு அல்லாஹ் என்ன செய்வான்? என்ன வேண்டுமானாலும் செய்வான், அது அவனுடைய விருப்பம்.
+இன்ன தப்புக்கு இன்ன தண்டனை என்று எல்லாத் தவறுகளுக்கும் சொல்லப்படவே இல்லை. சிலவற்றுக்குத் தான் சொல்லப்பட்டிருக்கிறது. பல தவறுகளுக்குத் தண்டனை சொல்லப்படவே இல்லை. எனவே நாம் எப்படி விளங்க வேண்டும் என்றால், அது எந்த அளவுக்கு வலியுறுத்தப்படுகிறது என்பதை
+மட்டும் தான் பார்க்க வேண்டும்.
+நோன்பை  ஏன் கடமை என்கிறோம் ?
+உங்களுக்குக் கடமையாக்கப்பட்டுவிட்டது என்று குர்ஆனில் கூறப்பட்டு விட்டது:
+குத்திப அலைக்குமுஸ் சியாம்
+நோன்பு கடமையாக்கப்பட்டுவிட்டது, அவ்வளவு தான். என்ன தண்டனை என்பதெல்லாம் அங்கு சொல்லப்படவில்லை. கடமை, எனவே செய். கண்டிப்பாக நோன்பு வைத்தால் கூலி இருப்பது போல், நோன்பை விட்டால் தண்டனை உண்டா என்றால் உண்டு; ஆனால் சொல்லப்படவில்லை.
+ஹஜ்ஜை விட்டவருக்கு என்ன தண்டனை? என்று
+சொல்லப்படவில்லை.
+ஜகாத்தை நிறைவேற்றவில்லை என்றால் சூடு போடப்படும் என்ற தண்டனை இருக்கிறது, ஆகவே சிலவற்றுக்குத் தண்டனை சொல்லப்பட்டிருக்கிறது.
+சிலவற்றுக்குத் தண்டனை சொல்லப்படாமல் இருக்கிறது.
+தண்டனை சொல்லப்பட்டால் தான் கடமை, தண்டனை
+சொல்லப்படாவிட்டால் கடமை இல்லை என்பது அறியாமை.
+தண்டனை சொல்லப்படாவிட்டாலும் தண்டனை உண்டு. இதை நாம் எப்படி விளங்க வேண்டும் என்றால், இன்ன தண்டனை என்று சொல்லவில்லையே தவிர, அல்லாஹ் ஒன்றை வலியுறுத்தி இருக்கும் போது செய்யாமல் இருந்தால் அல்லாஹ் எப்படித் தண்டிக்காமல் இருப்பான். மன்னிக்கவில்லை என்றால் தண்டிக்கத் தான் செய்வான். அல்லாஹ்வும் ரசூலும் ஒன்றைக் கட்டாயப்படுத்தி இருக்கும் போது நாம் செய்யத் தவறினால் அதற்குத் தண்டிக்கத்தான் செய்வான். மன்னித்தான் என்றால் அது அவனுடைய விருப்பம், அவன் மன்னிக்கவில்லையானால் தண்டிக்கத்தான் செய்வான். அது என்ன தண்டனை என்பது நமக்குத் தெரியாது. எதற்கு வேண்டுமானாலும் என்ன தண்டனை வேண்டுமானாலும் அல்லாஹ் கொடுப்பான், அது அவனுடைய அதிகாரத்தில் உள்ளது.
+எதற்குத் தண்டனை சொல்லப்பட்டு இருக்கிறதோ அதற்கு அந்தத்
+தண்டனையும், எதற்குச் சொல்லப்படவில்லையோ அதற்கு அல்லாஹ் நாடக்கூடிய தண்டனையும் இருக்கிறது என்று விளங்கிக்கொள்ள வேண்டுமே தவிர, தண்டனை சொல்லப்படா விட்டால் சுன்னத்து என்று தான் சொல்வேன் என்று சொல்லக் கூடாது. பெருநாள் தொழுகையை எடுத்துக் கொள்வோம்
+அது கடமை என்று சொல்வதற்குரிய அம்சம் இருக்கிறதா இல்லையா?
+ரஸுலல்லா பெருநாள் தொழுகைக்குஜஎல்லோரையும் வரச் சொல்கிறார்கள். வெள்ளிக்கிழமை பெண்கள் ஜும்மாவுக்குப் பதிலாக பெருநாள் தொழுகை தொழுதால் போதும் என்கிறார்கள். அப்படியானால் ஜும்மாவுடைய இடத்தில் பெருநாள் தொழுகையை நிறுத்துகிறார்கள். அப்படி வலியுறுத்திச் சொல்லியிருக்கும் பொழுது, அதற்கு என்ன தண்டனை என்பது தேவையில்லாத ஒன்று. எங்களுக்கு அல்லாஹ்வுடைய ரசூல் வலியுறுத்திச் சொல்லிவிட்டார்கள் என்றால் அது கடமை தான்.
+சாதாரணமாகச் சொன்னார்கள் என்றால் அது கடமை இல்லை.
+இதுபோன்று அதிகமான முக்கியத்துவம் கொடுத்து எதையெல்லாம் வலியுறுத்தி இருக்கிறார்களோ அதையெல்லாம் கடமை என்று சொல்ல வேண்டுமே தவிர, தண்டனை சொல்லப்பட்டால் தான் அது கடமை என்பது தவறான வாதம்.
+அப்படித் தண்டனை குறிப்பிடப்படாத வை எல்லாம் கடமை இல்லை என்று சொல்ல முடியுமா ?. எவ்வளவோ கடமைகள் குறிப்பிடப்பட்டு இருக்கின்றன. குறிப்பாக தாய் தந்தையரைக் கவனிக்காவிட்டால் தண்டனை உண்டு என்று இருக்கிறது; சில வணக்கங்களுக்குத் தண்டனை இல்லை.
+ஆனால் பெற்றோரைக் கவனிக்காவிட்டால் தண்டனை என்று மார்க்கத்தில் இருக்கிறது. சில இபாதத்துகளுக்குத் தண்டனை என்று சொல்லப்படவே இல்லை, அதற்காக அந்த இபாதத் கடமை இல்லை என்று சொல்ல முடியுமா?
+ஆகவே, தண்டனைகள் சொல்லப்பட்ட வணக்கங்களும் இருக்கின்றன, தண்டனைகள் சொல்லப்படாத வணக்கங்களும் இருக்கின்றன.
+சொன்னாலும் சொல்லப்படாவிட்டாலும் வலியுறுத்தினால் அது கடமை.
+வலியுறுத்தியதை மீறினீர்கள் என்றால் அல்லாஹ் தண்டிப்பான். எப்படி தண்டிப்பான் என்று நமக்குத் தெரியாது. அவன் வலியுறுத்தியதை மீறியதற்கு அவன் என்ன தண்டனை வைத்திருக்கிறானோ அதை வைத்துத் தண்டிப்பான் என்று விளங்கிக்கொள்ள வேண்டும். அதனால் இந்த அடிப்படையில் ஃபர்ளு, சுன்னத்தை முடிவெடுக்கக் கூடாது.`,
+    english: `Next, the question is: what is the criterion for obligatory matters?
+If a matter is emphasized but carries no punishment when left undone, then it is not an obligation.
+It is an emphasized Sunnah.
+Based on this, some preachers explain that the Eid prayer, Witr prayer, and marriage are all emphasized Sunnahs.
+What is this emphasized Sunnah?
+Who coined this term? Is this acceptable in our religion? Can it be newly invented? they ask. Essentially, what they are asking is this:
+They called the Eid prayer a Sunnah.
+We said it is an obligation, not a Sunnah.
+The explanation they give for their stance is that the Eid prayer should not be called an obligation; it must only be called an emphasized Sunnah.
+If asked why, they argue it is because no specific punishment is mentioned for abandoning the Eid prayer.
+It becomes an obligation only if a punishment is specified.
+If it is stated that you will be punished for abandoning a matter, only then does it become an obligation.
+Someone from a group that considers the Eid prayer a Sunnah seems to have gone and told him this, giving the explanation that if no punishment is mentioned, it must only be called an emphasized Sunnah.
+He is asking if such a concept exists.
+Punishments are not mentioned for all obligations.
+For instance, if asked whether fasting is an obligation in the religion or not, it is indeed an obligation. What is the punishment for abandoning the fast?
+We all know that there is a known punishment for abandoning the prayer. But for fasting, only its excellence is mentioned; no punishment is specified. It is said that fasting people will enter through the gate of Rayyan and that Allah Himself will give the reward, but is there any punishment mentioned, such as becoming a disbeliever for abandoning the fast? No. Thus, no punishment is mentioned for abandoning the fast.
+Because of that, would you say fasting is not an obligation?
+Among obligations, some will have specified punishments, while others will not. Allah has kept a punishment for abandoning an obligation.
+If Allah and the Messenger have emphasized something, it must absolutely be done.
+Failing to do it after Allah and the Messenger have emphasized it is a sin committed against Allah.
+What will Allah do about that? He will do whatever He wants; that is His will.
+It is not mentioned for every mistake that it carries a specific punishment. It is mentioned only for a few. Punishments are not mentioned for many mistakes at all. Therefore, how we should understand this is by looking solely at the extent to which it is emphasized.
+Why do we call fasting an obligation?
+It has been stated in the Quran that it has been made obligatory upon you:
+Kutiba alaikumus siyam.
+Fasting has been made obligatory, and that is all. The punishment is not mentioned there. It is an obligation, therefore do it. Just as there is certainly a reward for fasting, if asked whether there is a punishment for abandoning it, the answer is yes; but it is simply not mentioned.
+What is the punishment for someone who abandons Hajj? It is not mentioned.
+If Zakat is not fulfilled, there is a punishment that they will be branded. Thus, for some matters, punishments are mentioned. For others, punishments are not mentioned.
+It is ignorant to claim that an act is an obligation only if a punishment is mentioned, and not an obligation if a punishment is absent.
+Even if a punishment is not specified, a punishment still exists. We must understand it this way: although a specific punishment is not mentioned, how could Allah not punish someone for neglecting an act He has emphasized? If He does not forgive, He will indeed punish. When Allah and the Messenger have made something mandatory, if we fail to do it, He will certainly punish us for it. If He forgives, that is His will; if He does not forgive, He will absolutely punish. We do not know what that punishment will be. Allah will administer whatever punishment He wishes for whatever act He chooses; that falls entirely within His authority.
+We should understand that if a punishment is mentioned, that specific punishment applies; and if it is not mentioned, the punishment is whatever Allah wills, rather than arguing that if a punishment is not mentioned, it can only be called a Sunnah. Let us take the Eid prayer. Does it possess the characteristics to be called an obligation or not?
+The Messenger of Allah tells everyone to attend the Eid prayer. They say it is sufficient if women pray the Eid prayer instead of Jummah on a Friday if the Eid falls on Jummah day. In that case, they are elevating the Eid prayer to the level of Jummah. When it has been emphasized to such an extent, asking what the punishment is becomes irrelevant. If the Messenger of Allah has emphasized it to us, then it is an obligation.
+If it had been mentioned casually, it would not be an obligation. Given such high importance, whatever has been heavily emphasized must be called an obligation. The argument that it is an obligation only if a punishment is specified is a flawed argument.
+Can it be said that all acts without a specified punishment are not obligations? So many obligations have been outlined. Specifically, it states there is a punishment for neglecting one's parents, yet there are no punishments mentioned for certain acts of worship.
+But the religion dictates a punishment for neglecting parents. For some acts of worship, punishments are not mentioned at all. Can it be said that such an act of worship is not an obligation just because of that?
+Therefore, there are acts of worship with specified punishments, and there are acts of worship without specified punishments.
+Whether mentioned or not, if heavily emphasized, it is an obligation.
+If you violate what is emphasized, Allah will punish you. We do not know how He will punish. It should be understood that He will punish using whatever penalty He has reserved for violating His emphasized commands. Therefore, Fard and Sunnah should not be decided on this basis.`
+  }
+
+];
+
+/* ================================================================
+   END OF DATA SECTION — DO NOT EDIT BELOW THIS LINE
+================================================================ */
+</script>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="header-badge">PJ Annan — Official Delivery</div>
+      <div class="header-title" id="admin-trigger" style="cursor:default;"><span>PJ Annan</span> — Translation Delivery</div>
+      <div class="header-sub">Tiruppathur, Tamil Nadu &nbsp;·&nbsp; Tamil → English</div>
+    </div>
+    <div class="header-right">
+      <div class="label">Delivered by</div>
+      <div class="value">Director Sirajudeen</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Video Link</th>
+          <th>Tamil</th>
+          <th>English</th>
+          <th>Duration</th>
+          <th>Date</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="8" style="text-align:center; color: var(--text-muted); font-weight:400; letter-spacing:1px;">— End of Sessions —</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">PJ Annan</div>
+    <div>Confidential · Client Use Only</div>
+    <div>Director Verified</div>
+  </div>
+
+</div>
+
+<!-- EXPANDED PANEL -->
+<div class="expanded-overlay" id="overlay" style="display:none;" onclick="closePanel(event)">
+  <div class="expanded-panel" onclick="event.stopPropagation()">
+    <div class="expanded-header">
+      <div class="expanded-header-left">
+        <div class="type-label" id="panel-type-label">Tamil Transcription</div>
+        <div class="video-title" id="panel-video-title"></div>
+      </div>
+      <button class="btn-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="expanded-body" id="panel-body"></div>
+    <div class="expanded-footer">
+      <div class="info" id="panel-info"></div>
+      <button class="btn-download" id="panel-download" onclick="downloadText()">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN BAR — hidden by default -->
+<div class="admin-bar hidden" id="admin-bar">
+  <div class="admin-bar-label">Director Admin &nbsp;·&nbsp; <span id="admin-lock-btn" onclick="lockAdmin()" style="cursor:pointer; color:var(--text-muted); font-size:10px; letter-spacing:1px;">🔒 Lock</span></div>
+  <div class="admin-bar-btns">
+    <button class="btn-admin btn-add" onclick="openAddModal()">+ Add Session</button>
+    <button class="btn-admin btn-export" onclick="exportPortal()">⬇ Export Portal</button>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal" style="display:none;">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title-label">Add New Session</div>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title (Tamil)</label>
+        <input class="form-input" id="f-title" type="text" placeholder="Session title in Tamil">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Video Link</label>
+        <input class="form-input" id="f-video" type="text" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Duration (MM:SS)</label>
+        <input class="form-input" id="f-duration" type="text" placeholder="12:34" style="max-width:120px;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date (DD/MM/YYYY)</label>
+        <input class="form-input" id="f-date" type="text" placeholder="20/04/2026" style="max-width:160px;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tamil Text</label>
+        <textarea class="form-textarea" id="f-tamil" placeholder="Paste Tamil transcription here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">English Translation</label>
+        <textarea class="form-textarea" id="f-english" placeholder="Paste English translation here..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveSession()">Save Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="delete-modal" style="display:none;">
+  <div class="confirm-box" onclick="event.stopPropagation()">
+    <div class="confirm-title">Delete Session?</div>
+    <div class="confirm-msg" id="delete-msg">This session will be removed from the portal.</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pw-overlay" style="display:none;">
+  <div class="pw-box" onclick="event.stopPropagation()">
+    <button class="pw-close" onclick="closePwModal()">✕</button>
+    <span class="pw-icon">🔐</span>
+    <div class="pw-title">Director Access</div>
+    <div class="pw-sub">Enter your admin password to continue</div>
+    <input class="pw-input" id="pw-input" type="password" placeholder="••••••••••" maxlength="30"
+      onkeydown="if(event.key==='Enter') verifyPassword()">
+    <div class="pw-error" id="pw-error"></div>
+    <button class="pw-btn" onclick="verifyPassword()">Unlock Admin</button>
+    <div class="pw-lock-hint">Tap the portal title 3 times to open this panel</div>
+  </div>
+</div>
+
+<script>
+  let currentText = '';
+  let currentFileName = '';
+  let editIndex = -1;
+  let deleteIndex = -1;
+  let adminUnlocked = false;
+
+  // ── TRIPLE TAP TRIGGER ──
+  let tapCount = 0;
+  let tapTimer = null;
+  document.getElementById('admin-trigger').addEventListener('click', function() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function() { tapCount = 0; }, 700);
+    if (tapCount >= 3) {
+      tapCount = 0;
+      clearTimeout(tapTimer);
+      openPwModal();
+    }
+  });
+
+  // ── PASSWORD MODAL ──
+  function openPwModal() {
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-error').textContent = '';
+    document.getElementById('pw-overlay').style.display = 'flex';
+    setTimeout(function() { document.getElementById('pw-input').focus(); }, 100);
+  }
+
+  function closePwModal() {
+    document.getElementById('pw-overlay').style.display = 'none';
+  }
+
+  function verifyPassword() {
+    const val = document.getElementById('pw-input').value;
+    if (val === 'Beautiful7459!') {
+      closePwModal();
+      unlockAdmin();
+    } else {
+      document.getElementById('pw-error').textContent = 'Incorrect password. Try again.';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+
+  // ── ADMIN LOCK / UNLOCK ──
+  function unlockAdmin() {
+    adminUnlocked = true;
+    document.getElementById('admin-bar').classList.remove('hidden');
+    document.getElementById('main-table').classList.add('admin-unlocked');
+    buildTable();
+  }
+
+  function lockAdmin() {
+    adminUnlocked = false;
+    document.getElementById('admin-bar').classList.add('hidden');
+    document.getElementById('main-table').classList.remove('admin-unlocked');
+    buildTable();
+  }
+
+  function buildTable() {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    DELIVERIES.forEach((d, i) => {
+      const actionsCell = adminUnlocked
+        ? `<td class="col-actions">
+            <div class="row-actions">
+              <button class="btn-admin btn-action-edit" onclick="openEditModal(${i})">Edit</button>
+              <button class="btn-admin btn-action-delete" onclick="openDeleteModal(${i})">Delete</button>
+            </div>
+           </td>`
+        : `<td class="col-actions"></td>`;
+      const row = `
+        <tr>
+          <td class="sr-num">${String(d.sr).padStart(2,'0')}</td>
+          <td class="title-text">${d.title}</td>
+          <td><button class="btn-link btn-video" onclick="openVideo('${d.videoLink}')">▶ Watch</button></td>
+          <td><button class="btn-link btn-tamil" onclick="showPanel('tamil', ${i})">தமிழ் View</button></td>
+          <td><button class="btn-link btn-english" onclick="showPanel('english', ${i})">English View</button></td>
+          <td class="duration-text">${d.duration}</td>
+          <td class="duration-text">${d.date || '—'}</td>
+          ${actionsCell}
+        </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  function openVideo(url) { window.open(url, '_blank'); }
+
+  function showPanel(type, index) {
+    const d = DELIVERIES[index];
+    const overlay = document.getElementById('overlay');
+    document.getElementById('panel-video-title').textContent = d.title;
+    const body = document.getElementById('panel-body');
+    const info = document.getElementById('panel-info');
+    const typeLabel = document.getElementById('panel-type-label');
+    if (type === 'tamil') {
+      typeLabel.textContent = 'Tamil Transcription';
+      typeLabel.style.color = '#8ab4f8';
+      body.textContent = d.tamil;
+      info.textContent = 'Session ' + d.sr + ' · Tamil Transcription';
+      currentText = d.tamil;
+      currentFileName = 'Session_' + d.sr + '_Tamil.txt';
+    } else {
+      typeLabel.textContent = 'English Translation';
+      typeLabel.style.color = '#c8a8ff';
+      body.textContent = d.english;
+      info.textContent = 'Session ' + d.sr + ' · English Translation';
+      currentText = d.english;
+      currentFileName = 'Session_' + d.sr + '_English.txt';
+    }
+    document.getElementById('panel-download').style.display = 'inline-flex';
+    overlay.style.display = 'flex';
+  }
+
+  function closePanel(event) {
+    if (!event || event.target === document.getElementById('overlay')) {
+      document.getElementById('overlay').style.display = 'none';
+    }
+  }
+
+  function downloadText() {
+    const blob = new Blob([currentText], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = currentFileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── ADD ──
+  function openAddModal() {
+    editIndex = -1;
+    document.getElementById('modal-title-label').textContent = 'Add New Session';
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-video').value = '';
+    document.getElementById('f-duration').value = '';
+    document.getElementById('f-date').value = '';
+    document.getElementById('f-tamil').value = '';
+    document.getElementById('f-english').value = '';
+    document.getElementById('edit-modal').style.display = 'flex';
+  }
+
+  // ── EDIT ──
+  function openEditModal(i) {
+    editIndex = i;
+    const d = DELIVERIES[i];
+    document.getElementById('modal-title-label').textContent = 'Edit Session ' + d.sr;
+    document.getElementById('f-title').value = d.title;
+    document.getElementById('f-video').value = d.videoLink;
+    document.getElementById('f-duration').value = d.duration;
+    document.getElementById('f-date').value = d.date || '';
+    document.getElementById('f-tamil').value = d.tamil;
+    document.getElementById('f-english').value = d.english;
+    document.getElementById('edit-modal').style.display = 'flex';
+  }
+
+  function closeModal() { document.getElementById('edit-modal').style.display = 'none'; }
+
+  function saveSession() {
+    const title = document.getElementById('f-title').value.trim();
+    const video = document.getElementById('f-video').value.trim();
+    const duration = document.getElementById('f-duration').value.trim();
+    const date = document.getElementById('f-date').value.trim();
+    const tamil = document.getElementById('f-tamil').value.trim();
+    const english = document.getElementById('f-english').value.trim();
+    if (!title || !tamil || !english) {
+      alert('Title, Tamil text, and English translation are required.');
+      return;
+    }
+    if (editIndex === -1) {
+      const newSr = DELIVERIES.length > 0 ? DELIVERIES[DELIVERIES.length - 1].sr + 1 : 1;
+      DELIVERIES.push({ sr: newSr, title, videoLink: video || '#', duration: duration || '00:00', date: date || '—', amount: 0, payment: 'pending', tamil, english });
+    } else {
+      DELIVERIES[editIndex].title = title;
+      DELIVERIES[editIndex].videoLink = video || '#';
+      DELIVERIES[editIndex].duration = duration || '00:00';
+      DELIVERIES[editIndex].date = date || '—';
+      DELIVERIES[editIndex].tamil = tamil;
+      DELIVERIES[editIndex].english = english;
+    }
+    closeModal();
+    buildTable();
+  }
+
+  // ── DELETE ──
+  function openDeleteModal(i) {
+    deleteIndex = i;
+    document.getElementById('delete-msg').textContent = 'Session ' + DELIVERIES[i].sr + ' — "' + DELIVERIES[i].title.substring(0, 40) + '..." will be removed.';
+    document.getElementById('delete-modal').style.display = 'flex';
+  }
+
+  function closeDeleteModal() { document.getElementById('delete-modal').style.display = 'none'; }
+
+  function confirmDelete() {
+    DELIVERIES.splice(deleteIndex, 1);
+    DELIVERIES.forEach((d, i) => { d.sr = i + 1; });
+    closeDeleteModal();
+    buildTable();
+  }
+
+  // ── EXPORT PORTAL ──
+  function exportPortal() {
+    function escapeBacktick(str) {
+      return str.replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    }
+    let dataStr = 'const DELIVERIES = [\n\n';
+    DELIVERIES.forEach((d, i) => {
+      dataStr += '  {\n';
+      dataStr += '    sr: ' + d.sr + ',\n';
+      dataStr += '    title: "' + d.title.replace(/"/g, '\\"') + '",\n';
+      dataStr += '    videoLink: "' + d.videoLink.replace(/"/g, '\\"') + '",\n';
+      dataStr += '    duration: "' + d.duration + '",\n';
+      dataStr += '    date: "' + (d.date || '—') + '",\n';
+      dataStr += '    amount: ' + (d.amount || 0) + ',\n';
+      dataStr += '    payment: "' + (d.payment || 'pending') + '",\n';
+      dataStr += '    tamil: \`' + escapeBacktick(d.tamil) + '\`,\n';
+      dataStr += '    english: \`' + escapeBacktick(d.english) + '\`\n';
+      dataStr += '  }' + (i < DELIVERIES.length - 1 ? ',' : '') + '\n\n';
+    });
+    dataStr += '];';
+
+    const html = document.documentElement.outerHTML;
+    const startMarker = 'const DELIVERIES = [';
+    const endMarker = '];';
+    const startIdx = html.indexOf(startMarker);
+    const endIdx = html.indexOf(endMarker, startIdx) + endMarker.length;
+    const newHtml = html.substring(0, startIdx) + dataStr + html.substring(endIdx);
+
+    const blob = new Blob([newHtml], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'index.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('overlay').style.display = 'none';
+      closeModal();
+      closeDeleteModal();
+      closePwModal();
+    }
+  });
+
+  buildTable();
+</script>
+
+</body>
+</html>
