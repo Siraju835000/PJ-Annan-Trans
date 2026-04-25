@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PJ Annan — Translation Delivery</title>
+    <style>
+        body { 
+            background-color: #111; 
+            color: #eee; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        #admin-bar { 
+            display: none; 
+            background-color: #d4af37; 
+            color: #000; 
+            padding: 10px 20px; 
+            border-radius: 4px; 
+            margin-bottom: 20px; 
+            font-weight: bold; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .admin-btn { 
+            background: #000; 
+            color: #d4af37; 
+            border: none; 
+            padding: 5px 10px; 
+            cursor: pointer; 
+            border-radius: 3px; 
+            font-size: 0.8rem; 
+            font-weight: bold;
+        }
+        .header-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            border-bottom: 1px solid #333; 
+            padding-bottom: 20px; 
+            margin-bottom: 20px; 
+        }
+        .header-left .small-gold { 
+            color: #d4af37; 
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 5px; 
+        }
+        .portal-title { 
+            color: #fff; 
+            font-size: 2rem; 
+            margin: 0; 
+            font-family: serif; 
+            cursor: pointer;
+            user-select: none; 
+            -webkit-user-select: none; 
+        }
+        .portal-title span { color: #d4af37; }
+        .header-left .subtitle { 
+            color: #888; 
+            font-size: 0.85rem; 
+            margin-top: 5px; 
+        }
+        .header-right { 
+            text-align: right; 
+            color: #d4af37; 
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            line-height: 1.4;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: #1a1a1a; 
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+        th { 
+            color: #d4af37; 
+            text-transform: uppercase; 
+            font-size: 0.7rem; 
+            letter-spacing: 1px; 
+            text-align: left; 
+            padding: 15px; 
+            border-bottom: 1px solid #333; 
+        }
+        td { 
+            padding: 15px; 
+            border-bottom: 1px solid #2a2a2a; 
+            color: #ccc; 
+            font-size: 0.85rem; 
+            vertical-align: middle; 
+        }
+        tr:hover { background-color: #222; }
+        .num { color: #d4af37; font-weight: bold; font-size: 0.9rem;}
+        .btn { 
+            padding: 6px 12px; 
+            border-radius: 4px; 
+            border: 1px solid transparent; 
+            cursor: pointer; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+        }
+        .btn-watch { background-color: transparent; border-color: #d4af37; color: #d4af37; }
+        .btn-tamil { background-color: rgba(65, 105, 225, 0.15); border-color: #4169e1; color: #8fa8ff; }
+        .btn-english { background-color: rgba(128, 0, 128, 0.15); border-color: #800080; color: #d896ff; }
+        .end-marker { 
+            text-align: center; 
+            color: #666; 
+            font-size: 0.7rem; 
+            margin: 20px 0; 
+            letter-spacing: 1px; 
+        }
+        .footer { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            color: #666; 
+            font-size: 0.7rem; 
+            margin-top: 20px; 
+            padding-top: 20px; 
+            border-top: 1px solid #333; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        .footer div:nth-child(1) { color: #d4af37; }
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            th { display: none; }
+            td { display: flex; justify-content: space-between; align-items: center; padding: 10px; text-align: right; border-bottom: none; }
+            td::before { content: attr(data-label); color: #d4af37; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; text-align: left; flex-basis: 40%; }
+            tr { border-bottom: 1px solid #333; padding-bottom: 10px; }
+            .header-container { flex-direction: column; gap: 15px; }
+            .header-right { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="admin-bar">
+        <span>Executive Access: System Unlocked</span>
+        <button class="admin-btn" onclick="document.getElementById('admin-bar').style.display='none'">Lock Terminal</button>
+    </div>
+
+    <div class="header-container">
+        <div class="header-left">
+            <div class="small-gold">PJ Annan — Official Delivery</div>
+            <h1 class="portal-title"><span>PJ Annan</span> — Translation Delivery</h1>
+            <div class="subtitle">Tiruppathur, Tamil Nadu | Tamil - English</div>
+        </div>
+        <div class="header-right">
+            Delivered By<br><strong style="color: #fff;">Director Sirajudeen</strong>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Video Link</th>
+                <th>Tamil</th>
+                <th>English</th>
+                <th>Duration</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="sessions-body">
+            <tr>
+                <td class="num" data-label="#">01</td>
+                <td data-label="Title" style="text-align: left;">பாத்திமா ரழியல்லாஹு அன்ஹா எந்த ஆண்டு பிறந்தார்கள்</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">12:34</td>
+                <td data-label="Date">20/04/2026</td>
+            </tr>
+            <tr>
+                <td class="num" data-label="#">02</td>
+                <td data-label="Title" style="text-align: left;">பஜர் தொழமுடியாமல் தூக்கம் வந்தால் தூங்கலாம் என்று வரும் ஹதீஸை எப்படி விளங்குவது</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">8:45</td>
+                <td data-label="Date">20/04/2026</td>
+            </tr>
+            <tr>
+                <td class="num" data-label="#">03</td>
+                <td data-label="Title" style="text-align: left;">ஆரம்ப துஆ பலவீனமானதா?</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">15:20</td>
+                <td data-label="Date">20/04/2026</td>
+            </tr>
+            <tr>
+                <td class="num" data-label="#">04</td>
+                <td data-label="Title" style="text-align: left;">பஜரு மற்றும் வைகறை இரண்டும் ஒன்றா?</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">10:15</td>
+                <td data-label="Date">20/04/2026</td>
+            </tr>
+            <tr>
+                <td class="num" data-label="#">05</td>
+                <td data-label="Title" style="text-align: left;">பர்லான தொழுகையை வீட்டில் தொழலாமா?</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">11:50</td>
+                <td data-label="Date">20/04/2026</td>
+            </tr>
+            <tr>
+                <td class="num" data-label="#">06</td>
+                <td data-label="Title" style="text-align: left;">ஃபர்லு சுன்னத் அளவுகோல் என்ன?</td>
+                <td data-label="Video Link"><button class="btn btn-watch">▶ Watch</button></td>
+                <td data-label="Tamil"><button class="btn btn-tamil">தமிழ் View</button></td>
+                <td data-label="English"><button class="btn btn-english">English View</button></td>
+                <td data-label="Duration">5:00</td>
+                <td data-label="Date">24/04/2026</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="end-marker">- END OF SESSIONS -</div>
+
+    <div class="footer">
+        <div>PJ ANNAN</div>
+        <div>Confidential - Client Use Only</div>
+        <div>Director Verified</div>
+    </div>
+
+    <script>
+        const portalTitle = document.querySelector('.portal-title');
+        const adminBar = document.getElementById('admin-bar');
+        let pressTimer;
+
+        const startPress = (e) => {
+            pressTimer = setTimeout(() => {
+                let adminPass = prompt("Enter Executive Access Code:");
+                if (adminPass === "Beautiful7459!") {
+                    adminBar.style.display = "flex";
+                } else if (adminPass !== null) {
+                    alert("Authorization Failed.");
+                }
+            }, 2000); 
+        };
+
+        const cancelPress = () => {
+            clearTimeout(pressTimer);
+        };
+
+        portalTitle.addEventListener('touchstart', startPress, {passive: true});
+        portalTitle.addEventListener('touchend', cancelPress);
+        portalTitle.addEventListener('touchmove', cancelPress);
+        portalTitle.addEventListener('mousedown', startPress);
+        portalTitle.addEventListener('mouseup', cancelPress);
+        portalTitle.addEventListener('mouseleave', cancelPress);
+    </script>
+</body>
+</html>
